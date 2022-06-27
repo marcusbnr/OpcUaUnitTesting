@@ -1,0 +1,10 @@
+# Virtual Environment
+venv/
+
+# Outfiles
+Outfiles/
+
+# Python Package
+dist/
+*.egg-info/
+
