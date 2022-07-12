@@ -16,5 +16,7 @@ setup(
     python_requires=">=3.8, <4",
     include_package_data=True,
     install_requires=[
+        'opcua>=0.98.13',
+        'cryptography>=37.0'
     ],
 )
