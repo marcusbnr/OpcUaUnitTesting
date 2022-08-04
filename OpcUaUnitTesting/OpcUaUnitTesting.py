@@ -17,11 +17,18 @@ from opcua import Client
 
 ######## Declare Functions ########
 
+#
+def printList(List):
+    ListIndex = 0
+    while ListIndex < len(List):
+        print(ListIndex, ":", List[ListIndex])
+        ListIndex += 1
+
 # Function which seaches the client for PLC tasks at the expected namespace
 # creates a list of tasks and prints that list
 # Requires: An OpcUa Client
 # Modifies: Only local variables
-# Returns: A List of task names found on the Client
+# Returns: A List of Nodes found on the Client that correspond to PLC tasks
 def getPLCTasks(client):
     ServerTasksRootNode = client.get_node("ns=6;s=::")
     ListOfTaskNodes = ServerTasksRootNode.get_children()
@@ -29,31 +36,18 @@ def getPLCTasks(client):
     for Task in ListOfTaskNodes:
         TaskName = Task.get_browse_name()
         ListOfTaskNames.append(TaskName.Name)
-
     print("Tasks found:\n")
-    ListIndex = 0
-    while ListIndex < len(ListOfTaskNames):
-        print(ListIndex, ":", ListOfTaskNames[ListIndex])
-        ListIndex += 1
-    print("\n")
-    return ListOfTaskNames
+    printList(ListOfTaskNames)
+    return ListOfTaskNodes
 
-#
+# Function which displays the list of tasks found on the PLC
+# and lets a user choose a task, then displays all found tags
+# related to that task
+# Requires: An OpcUa Client
+# Modifies: Only local variables
+# Returns: A List of OpcUa nodes found on the Client
 def getPLCTags(client):
-    ServerTasksRootNode = client.get_node("ns=6;s=::")
-    ListOfTaskNodes = ServerTasksRootNode.get_children()
-    ListOfTaskNames = []
-    for Task in ListOfTaskNodes:
-        TaskName = Task.get_browse_name()
-        ListOfTaskNames.append(TaskName.Name)
-
-    print("Tasks found:\n")
-    ListIndex = 0
-    while ListIndex < len(ListOfTaskNames):
-        print(ListIndex, ":", ListOfTaskNames[ListIndex])
-        ListIndex += 1
-    print("\n")
-
+    ListOfTaskNodes = getPLCTasks(client)
     TaskToSearch = input("Input the number of the task to examine: ")
     ListOfPVNodes = ListOfTaskNodes[int(TaskToSearch)].get_children()
     ListOfTagNames = []
@@ -61,15 +55,32 @@ def getPLCTags(client):
         TagName = PVNode.get_browse_name()
         ListOfTagNames.append(TagName.Name)
 
-    print("Tags found:\n")
-    ListIndex = 0
-    while ListIndex < len(ListOfTagNames):
-        print(ListIndex, ":", ListOfTagNames[ListIndex], "-", ListOfPVNodes[ListIndex].get_value())
-        ListIndex += 1
+    print("\nTags found:")
+    printList(ListOfTagNames)
+    return ListOfPVNodes
 
 #
+def getSpecifiedTag(client):
+    ListOfPVNodes = getPLCTags(client)
+    varIndex = input("Enter the number of the variable to get the value of: ")
+    try:
+        print("")
+        print(ListOfPVNodes[int(varIndex)].get_browse_name().Name, "=", ListOfPVNodes[int(varIndex)].get_value())
+    except:
+        print("Could not get value!")
+    return
+
+#
+def setSpecifiedTag(client, taskName, varName):
+    print("\nNot implimented yet! \n")
+    return
+
+# Function which shows the user a menu and processes responses
+# Requires: An OpcUa Client
+# Modifies: Only local variables
+# Returns: Nothing
 def menu(client):
-    print("Welcome to the OpcUa Unit Tester! Please enter the letter corresponding to the desired option: ")
+    print("\nWelcome to the OpcUa Unit Tester! Please enter the letter corresponding to the desired option: ")
     print("A. Get a list of PLC tasks")
     print("B. Get a list of PLC tag values")
     print("C. Get the value of a specific PLC tag")
@@ -83,17 +94,18 @@ def menu(client):
     elif optionChoice == "B" or optionChoice == "b": # Get a list of tasks, then tags
         getPLCTags(client)
     elif optionChoice == "C" or optionChoice == "c": # Get a specific tag
-        print("Not implimented yet! \n")
+        getSpecifiedTag(client)
     elif optionChoice == "D" or optionChoice == "d": # Set a specific tag
-        print("Not implimented yet! \n")
+        setSpecifiedTag(client, "")
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message, then disconnect
-        print("Sorry, that's not one of the available options")
+        print("\nSorry, that's not one of the available options")
         endMenu = True
 
     if endMenu:
         client.disconnect()
+        print("\nDisconnected! Thank you for using the OpcUa Unit Tester")
     else:
         return menu(client)
 
