@@ -32,12 +32,6 @@ def printList(List):
 def getPLCTasks(client):
     ServerTasksRootNode = client.get_node("ns=6;s=::")
     ListOfTaskNodes = ServerTasksRootNode.get_children()
-    ListOfTaskNames = []
-    for Task in ListOfTaskNodes:
-        TaskName = Task.get_browse_name()
-        ListOfTaskNames.append(TaskName.Name)
-    print("Tasks found:\n")
-    printList(ListOfTaskNames)
     return ListOfTaskNodes
 
 # Function which displays the list of tasks found on the PLC
@@ -47,32 +41,42 @@ def getPLCTasks(client):
 # Modifies: Only local variables
 # Returns: A List of OpcUa nodes found on the Client
 def getPLCTags(client):
+    # Get and display list of PLC tasks
     ListOfTaskNodes = getPLCTasks(client)
+    ListOfTaskNames = []
+    for Task in ListOfTaskNodes:
+        TaskName = Task.get_browse_name()
+        ListOfTaskNames.append(TaskName.Name)
+    print("Tasks found:\n")
+    printList(ListOfTaskNames)
+    # User chooses a task
     TaskToSearch = input("Input the number of the task to examine: ")
+    # Find variables that live within the given task
     ListOfPVNodes = ListOfTaskNodes[int(TaskToSearch)].get_children()
-    ListOfTagNames = []
-    for PVNode in ListOfPVNodes:
-        TagName = PVNode.get_browse_name()
-        ListOfTagNames.append(TagName.Name)
-
-    print("\nTags found:")
-    printList(ListOfTagNames)
     return ListOfPVNodes
 
 #
-def getSpecifiedTag(client):
-    ListOfPVNodes = getPLCTags(client)
-    varIndex = input("Enter the number of the variable to get the value of: ")
+def getValueOfNode(client, taskName, varName):
+    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    nodeAddress = client.get_node(nodeName)
     try:
-        print("")
-        print(ListOfPVNodes[int(varIndex)].get_browse_name().Name, "=", ListOfPVNodes[int(varIndex)].get_value())
-    except:
-        print("Could not get value!")
-    return
+        value = nodeAddress.get_value()
+    except RuntimeError as exc:
+        print("\n", exc)
+        raise RuntimeError("Get Value failed!")
+        return 0
+    else:
+        return value
 
 #
-def setSpecifiedTag(client, taskName, varName):
-    print("\nNot implimented yet! \n")
+def setValueOfNode(client, taskName, varName, value):
+    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    nodeAddress = client.get_node(nodeName)
+    try:
+        nodeAddress.set_value(value)
+    except RuntimeError as exc:
+        print("\n", exc)
+        raise RuntimeError("Set Value failed!")
     return
 
 # Function which shows the user a menu and processes responses
@@ -82,26 +86,50 @@ def setSpecifiedTag(client, taskName, varName):
 def menu(client):
     print("\nWelcome to the OpcUa Unit Tester! Please enter the letter corresponding to the desired option: ")
     print("A. Get a list of PLC tasks")
-    print("B. Get a list of PLC tag values")
-    print("C. Get the value of a specific PLC tag")
-    print("D. Set the value of a specific PLC tag")
+    print("B. Get a list of PLC variables by task")
+    print("C. Get the value of a specific PLC variable")
+    print("D. Set the value of a specific PLC variable")
     print("Z. Disconnect")
     optionChoice = input()
     endMenu = False
 
     if optionChoice == "A" or optionChoice == "a": # Get list of tasks as nodes
-        getPLCTasks(client)
+        ListOfTaskNodes = getPLCTasks(client)
+        ListOfTaskNames = []
+        for Task in ListOfTaskNodes:
+            TaskName = Task.get_browse_name()
+            ListOfTaskNames.append(TaskName.Name)
+        print("Tasks found:\n")
+        printList(ListOfTaskNames)
     elif optionChoice == "B" or optionChoice == "b": # Get a list of tasks, then tags
-        getPLCTags(client)
-    elif optionChoice == "C" or optionChoice == "c": # Get a specific tag
-        getSpecifiedTag(client)
-    elif optionChoice == "D" or optionChoice == "d": # Set a specific tag
-        setSpecifiedTag(client, "")
+        ListOfPVNodes = getPLCTags(client)
+        ListOfTagNames = []
+        for PVNode in ListOfPVNodes:
+            TagName = PVNode.get_browse_name()
+            ListOfTagNames.append(TagName.Name)
+        print("\nTags found:")
+        printList(ListOfTagNames)
+    elif optionChoice == "C" or optionChoice == "c": # Get a specific variable value
+        taskName = input("Enter the name of the task as it exists on the PLC: ")
+        varName = input("Enter the name of the variable as it exists on the PLC: ")
+        try:
+            Value = getValueOfNode(client, taskName, varName)
+        except:
+            print("Get Value failed!")
+        else:
+            print("\nThe value of the chosen variable is: " + str(Value))
+    elif optionChoice == "D" or optionChoice == "d": # Set a specific variable value
+        taskName = input("Enter the name of the task as it exists on the PLC: ")
+        varName = input("Enter the name of the variable as it exists on the PLC: ")
+        value = input("Enter the value to set: ")
+        try:
+            setValueOfNode(client, taskName, varName, value)
+        except:
+            print("Variable was not set!")
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
-    else: # Show error message, then disconnect
+    else: # Show error message
         print("\nSorry, that's not one of the available options")
-        endMenu = True
 
     if endMenu:
         client.disconnect()
