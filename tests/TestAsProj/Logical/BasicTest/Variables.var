@@ -1,0 +1,9 @@
+VAR
+	TestBOOL : BOOL := TRUE;
+	TestDINT : DINT := 65534;
+	TestDT : DATE_AND_TIME;
+	TestTIME : TIME := T#1d;
+	AdditionIn1 : REAL;
+	AdditionIn2 : REAL;
+	AdditionOut : REAL;
+END_VAR

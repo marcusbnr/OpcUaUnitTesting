@@ -8,3 +8,9 @@ Outfiles/
 dist/
 *.egg-info/
 
+# Automation Studio Project
+*.set
+*.isopen
+**/Binaries
+**/Diagnosis
+**/Temp

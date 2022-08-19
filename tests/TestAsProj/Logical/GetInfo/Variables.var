@@ -1,0 +1,13 @@
+VAR
+	VisInfo : VisInfo_type;
+	InfoRefreshState : InfoRefreshState_enum;
+	CmdRefreshInfo : BOOL;
+	CmdErrorReset : BOOL;
+	Error : BOOL;
+	DtStruct : DTStructure;
+END_VAR
+(*Function Blocks*)
+VAR
+	fb_CfgGetIpAddr : CfgGetIPAddr;
+	fb_DTStructureGetTime : DTStructureGetTime;
+END_VAR

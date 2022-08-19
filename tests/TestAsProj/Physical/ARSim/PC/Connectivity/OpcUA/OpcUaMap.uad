@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<OpcUaSource FileVersion="9" ArVersion="B4.93">
+  <Aliases>
+    <ACLAliases />
+    <EURangeViolationAliases />
+    <EURangesAliases />
+    <EngineeringUnitAliases />
+  </Aliases>
+  <DefaultView>
+    <Module Name="&lt;Default&gt;">
+      <GlobalVariables Name="Global Variables">
+        <Variable Name="gGlobalInt" />
+        <Variable Name="gGlobalString" />
+        <Variable Name="gGlobalUInt" />
+        <Variable Name="gTestStruct" RecursiveEnable="2" />
+      </GlobalVariables>
+      <Task Name="GetInfo">
+        <Variable Name="CmdErrorReset" />
+        <Variable Name="CmdRefreshInfo" />
+        <Variable Name="Error" />
+        <Variable Name="VisInfo" RecursiveEnable="2" />
+      </Task>
+      <Task Name="BasicTest">
+        <Variable Name="AdditionIn1" />
+        <Variable Name="AdditionIn2" />
+        <Variable Name="AdditionOut" />
+        <Variable Name="TestBOOL" />
+        <Variable Name="TestDINT" />
+        <Variable Name="TestDT" />
+        <Variable Name="TestTIME" />
+      </Task>
+    </Module>
+  </DefaultView>
+</OpcUaSource>

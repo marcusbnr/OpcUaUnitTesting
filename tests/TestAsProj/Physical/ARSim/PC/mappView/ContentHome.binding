@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BindingsSet id="ContentHome_binding" xmlns="http://www.br-automation.com/iat2015/binding/engineering/v2" xmlns:bt="http://www.br-automation.com/iat2015/bindingListTypes/engineering/v2" xmlns:be="http://www.br-automation.com/iat2015/bindingListEmbedded/engineering/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Bindings>
+        <Binding mode="twoWay">
+            <Source xsi:type="opcUa" refId="::AsGlobalPV:gGlobalInt" attribute="value" />
+            <Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputGlobalInt" attribute="value" />
+        </Binding>
+        <Binding mode="twoWay">
+            <Source xsi:type="opcUa" refId="::AsGlobalPV:gGlobalUInt" attribute="value" />
+            <Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputGlobalUInt" attribute="value" />
+        </Binding>
+        <Binding mode="twoWay">
+            <Source xsi:type="opcUa" refId="::AsGlobalPV:gGlobalString" attribute="value" />
+            <Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="TextInputGlobalString" attribute="value" />
+        </Binding>
+    <Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gTestStruct.TestSTRING" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="TextInputGlobalStringStruct" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gTestStruct.TestBOOL" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="CheckBoxTestBoolStruct" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gTestStruct.TestUDINT" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputGlobalUDINTStruct" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gTestStruct.TestSubStruct.TestLREAL" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputGlobalLreal" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gTestStruct.TestSubStruct.TestREAL" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputGlobalReal" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:TestBOOL" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="CheckBoxTestBoolBasic" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:TestDT" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="DateTimeInputBasic" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:TestTIME" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputTimeBasic" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:TestDINT" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputDintBasic" attribute="value" />
+</Binding>
+<Binding mode="oneWay">
+<Source xsi:type="opcUa" refId="::BasicTest:AdditionOut" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericOutputCalcOut" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:AdditionIn2" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputCalcIn2" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::BasicTest:AdditionIn1" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentHome" widgetRefId="NumericInputCalcIn1" attribute="value" />
+</Binding>
+</Bindings>
+</BindingsSet>

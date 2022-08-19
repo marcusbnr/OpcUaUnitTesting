@@ -64,11 +64,17 @@ def getPLCTags(client):
 # Returns the value using OpcUa Client get_value() function
 def getValueOfNode(client, taskName, varName):
     nodeName = "ns=6;s=::" + taskName + ":" + varName
-    nodeAddress = client.get_node(nodeName)
     try:
-        value = nodeAddress.get_value()
+        node = client.get_node(nodeName)
     except Exception as exc:
-        print("\n", exc)
+        print('\n',Exc)
+        raise RuntimeError()
+        return 0
+
+    try:
+        value = node.get_value()
+    except Exception as exc:
+        print("\n",exc)
         raise RuntimeError()
         return 0
     else:
@@ -82,14 +88,23 @@ def getValueOfNode(client, taskName, varName):
 def setValueOfNode(client, taskName, varName, value):
     # Find the requested node on the server
     nodeName = "ns=6;s=::" + taskName + ":" + varName
-    node = client.get_node(nodeName)
+    try:
+        node = client.get_node(nodeName)
+    except Exception as exc:
+        print('\n',exc)
+        raise RuntimeError()
+        return
 
     # Get the datatype of the node on the server
     variantType = node.get_data_type_as_variant_type()
 
     # User input must be cast to match server variable type
     if variantType == ua.VariantType.Boolean:
-        pass
+        try:
+            value = int(value)
+        except:
+            raise ValueError("Invalid input. PLC variable is Boolean")
+            return
     elif variantType == ua.VariantType.SByte:
         try:
             value = int(value)
@@ -150,8 +165,6 @@ def setValueOfNode(client, taskName, varName, value):
         except:
             raise ValueError("Invalid input. PLC variable is Double")
             return
-    elif variantType == ua.VariantType.String:
-        pass
     elif variantType == ua.VariantType.DateTime:
         pass
 
@@ -159,7 +172,7 @@ def setValueOfNode(client, taskName, varName, value):
     try:
         node.set_value(ua.DataValue(ua.Variant(value, variantType)))
     except Exception as exc:
-        print("\n", exc)
+        print("\n",exc)
         raise RuntimeError()
     return
 
@@ -194,7 +207,7 @@ def menu(client):
         print("\nTags found:")
         printList(ListOfTagNames)
     elif optionChoice == "C" or optionChoice == "c": # Get a specific variable value
-        taskName = input("Enter the name of the task as it exists on the PLC: ")
+        taskName = input("Enter the name of the task as it exists on the PLC (use AsGlobalPV for Global variables): ")
         varName = input("Enter the name of the variable as it exists on the PLC: ")
         try:
             Value = getValueOfNode(client, taskName, varName)
@@ -203,18 +216,21 @@ def menu(client):
         else:
             print("\nThe value of the chosen variable is: " + str(Value))
     elif optionChoice == "D" or optionChoice == "d": # Set a specific variable value
-        taskName = "ServerTask" #= input("Enter the name of the task as it exists on the PLC: ")
-        varName = "ExplicitIn" #= input("Enter the name of the variable as it exists on the PLC: ")
+        taskName = input("Enter the name of the task as it exists on the PLC (use AsGlobalPV for Global variables): ")
+        varName = input("Enter the name of the variable as it exists on the PLC: ")
         value = input("Enter the value to set: ")
         try:
             setValueOfNode(client, taskName, varName, value)
         except ValueError as ve:
-            print("\n", ve)
+            print("\n",ve)
+            print("Variable was not set!")
+        except RuntimeError as re:
+            print("\n",re)
             print("Variable was not set!")
         except:
             print("Variable was not set!")
         else:
-            print("Variable set successfully. The value is now: ", getValueOfNode(client, taskName, varName))
+            print("Variable set successfully. The value is now:", getValueOfNode(client, taskName, varName))
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message
@@ -237,8 +253,8 @@ def menu(client):
 
 def main():
     # Get connection parameters from the User
-    clientIp = "172.29.240.1" #= input("Enter PLC IP Address: ")
-    clientPort = "4841" #= input("Enter PLC OPC-UA port: ")
+    clientIp = "172.27.224.1" #= input("Enter PLC IP Address: ")
+    clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
     clientUserName = "" #= input("Enter Username for connection, or leave blank for Anonymous connection: ")
 
     if clientUserName == "":
