@@ -28,7 +28,7 @@
     <Widget xsi:type="widgets.brease.Label" id="Label16" top="120" left="640" width="140" zIndex="24" text="Bool:" textAlign="right" fontSize="24px" bold="true" />
     <Widget xsi:type="widgets.brease.CheckBox" id="CheckBoxTestBoolBasic" top="120" left="780" zIndex="25" />
     <Widget xsi:type="widgets.brease.Label" id="Label8" top="200" left="640" width="140" zIndex="26" text="DateTime:" textAlign="right" fontSize="24px" bold="true" />
-    <Widget xsi:type="widgets.brease.DateTimeInput" id="DateTimeInputBasic" top="200" left="780" width="380" zIndex="27" fontSize="18px" bold="false" italic="false" />
+    <Widget xsi:type="widgets.brease.DateTimeInput" id="DateTimeInputBasic" top="200" left="780" width="380" zIndex="27" format="yyyy'-'MM'-'dd HH:mm:ss" fontSize="18px" bold="false" italic="false" />
     <Widget xsi:type="widgets.brease.Label" id="Label17" top="360" left="640" width="400" zIndex="28" text="Calculator" textAlign="center" fontSize="30px" bold="true" underline="true" />
     <Widget xsi:type="widgets.brease.NumericInput" id="NumericInputCalcIn1" top="420" left="640" width="140" zIndex="29" format="{'metric':{'decimalPlaces':0,'minimumIntegerDigits':1},'imperial':{'decimalPlaces':0,'minimumIntegerDigits':1},'imperial-us':{'decimalPlaces':0,'minimumIntegerDigits':1}}" />
     <Widget xsi:type="widgets.brease.Label" id="Label18" top="420" left="820" width="40" zIndex="30" text="+" textAlign="center" fontSize="20px" bold="true" />

@@ -9,6 +9,7 @@ Marcus Mangel <marcus.mangel@br-automation.com>
 
 import sys
 from opcua import Client, ua, Node
+from datetime import datetime
 
 ######## Structure Declarations ########
 
@@ -58,11 +59,96 @@ def getPLCTags(client):
     ListOfPVNodes = ListOfTaskNodes[int(TaskToSearch)].get_children()
     return ListOfPVNodes
 
+# Function which converts user input (string) to a valid datatype variant
+# Requires: The input datatype (inputStr) and the Variant Type required (variantType)
+# Modifies: Only local variables
+# Returns The converted value
+def convertOpcUaType(inputStr,variantType):
+    value = "Not converted yet"
+    if variantType == ua.VariantType.Boolean:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Boolean")
+            return 0
+    elif variantType == ua.VariantType.SByte:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is SByte")
+            return 0
+    elif variantType == ua.VariantType.Byte:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Byte")
+            return 0
+    elif variantType == ua.VariantType.Int16:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Int16")
+            return 0
+    elif variantType == ua.VariantType.UInt16:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is UInt16")
+            return 0
+    elif variantType == ua.VariantType.Int32:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Int32")
+            return 0
+    elif variantType == ua.VariantType.UInt32:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is UInt32")
+            return 0
+    elif variantType == ua.VariantType.Int64:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Int64")
+            return 0
+    elif variantType == ua.VariantType.UInt64:
+        try:
+            value = int(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is UInt64")
+            return 0
+    elif variantType == ua.VariantType.Float:
+        try:
+            value = float(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Float")
+            return 0
+    elif variantType == ua.VariantType.Double:
+        try:
+            value = float(inputStr)
+        except:
+            raise ValueError("Invalid input. PLC variable is Double")
+            return 0
+    elif variantType == ua.VariantType.DateTime:
+        try:
+            value = datetime.strptime(inputStr, '%Y-%m-%d %H:%M:%S')
+        except ValueError as ve:
+            print('\n',ve)
+            raise ValueError("Invalid input. PLC variable is DateTime")
+            return 0
+        except:
+            raise ValueError("Invalid input. PLC variable is DateTime")
+            return 0
+    return value
+
 # Gets the value of a variable on the PLC
 # Requires An OpcUa Client, the name of a Task and the name of a Variable in that task
 # Modifies: Only local variables
 # Returns the value using OpcUa Client get_value() function
 def getValueOfNode(client, taskName, varName):
+    # Find the requested node on the server
     nodeName = "ns=6;s=::" + taskName + ":" + varName
     try:
         node = client.get_node(nodeName)
@@ -70,11 +156,11 @@ def getValueOfNode(client, taskName, varName):
         print('\n',Exc)
         raise RuntimeError()
         return 0
-
+    # Get the Node's value
     try:
         value = node.get_value()
     except Exception as exc:
-        print("\n",exc)
+        print('\n',exc)
         raise RuntimeError()
         return 0
     else:
@@ -94,85 +180,20 @@ def setValueOfNode(client, taskName, varName, value):
         print('\n',exc)
         raise RuntimeError()
         return
-
     # Get the datatype of the node on the server
     variantType = node.get_data_type_as_variant_type()
-
     # User input must be cast to match server variable type
-    if variantType == ua.VariantType.Boolean:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Boolean")
-            return
-    elif variantType == ua.VariantType.SByte:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is SByte")
-            return
-    elif variantType == ua.VariantType.Byte:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Byte")
-            return
-    elif variantType == ua.VariantType.Int16:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Int16")
-            return
-    elif variantType == ua.VariantType.UInt16:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is UInt16")
-            return
-    elif variantType == ua.VariantType.Int32:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Int32")
-            return
-    elif variantType == ua.VariantType.UInt32:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is UInt32")
-            return
-    elif variantType == ua.VariantType.Int64:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Int64")
-            return
-    elif variantType == ua.VariantType.UInt64:
-        try:
-            value = int(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is UInt64")
-            return
-    elif variantType == ua.VariantType.Float:
-        try:
-            value = float(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Float")
-            return
-    elif variantType == ua.VariantType.Double:
-        try:
-            value = float(value)
-        except:
-            raise ValueError("Invalid input. PLC variable is Double")
-            return
-    elif variantType == ua.VariantType.DateTime:
-        pass
-
+    try:
+        value = convertOpcUaType(value,variantType)
+    except ValueError as ve:
+        print(ve)
+        raise ValueError()
+        return
     # Set the variable's value
     try:
         node.set_value(ua.DataValue(ua.Variant(value, variantType)))
     except Exception as exc:
-        print("\n",exc)
+        print('\n',exc)
         raise RuntimeError()
     return
 
@@ -181,6 +202,7 @@ def setValueOfNode(client, taskName, varName, value):
 # Modifies: Only local variables
 # Returns: Nothing
 def menu(client):
+    # Display menu and wait for input
     print("\nWelcome to the OpcUa Unit Tester! Please enter the letter corresponding to the desired option: ")
     print("A. Get a list of PLC tasks")
     print("B. Get a list of PLC variables by task")
@@ -190,6 +212,7 @@ def menu(client):
     optionChoice = input()
     endMenu = False
 
+    # Perform action based on chosen option
     if optionChoice == "A" or optionChoice == "a": # Get list of tasks as nodes
         ListOfTaskNodes = getPLCTasks(client)
         ListOfTaskNames = []
@@ -222,10 +245,10 @@ def menu(client):
         try:
             setValueOfNode(client, taskName, varName, value)
         except ValueError as ve:
-            print("\n",ve)
+            print(ve)
             print("Variable was not set!")
         except RuntimeError as re:
-            print("\n",re)
+            print(re)
             print("Variable was not set!")
         except:
             print("Variable was not set!")
@@ -240,7 +263,7 @@ def menu(client):
         try:
             client.disconnect()
         except Exception as exc:
-            print("\n", exc)
+            print('\n', exc)
             print("Disconnection failed!")
         else:
             print("\nDisconnected!")
@@ -261,7 +284,7 @@ def main():
         clientPath = "opc.tcp://" + clientIp + ":" + clientPort
     else:
         clientPath = "opc.tcp://" + clientUserName + "@" + clientIp + ":" + clientPort
-    print(clientPath)
+    print("Connecting to:", clientPath)
 
     # Define the Client using connection parameters
     client = Client(clientPath)
@@ -282,6 +305,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# To Do:
+# -Test REAL and LREAL
+# -Check each input before continuing (check task, then var, then value)
+# -Make sure you can get values from structs
 
 # Example Notes
     # client = Client("opc.tcp://admin@localhost:4840") #connect using a user
