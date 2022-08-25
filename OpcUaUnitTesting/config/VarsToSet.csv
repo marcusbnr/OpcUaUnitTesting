@@ -1,4 +1,0 @@
-﻿TaskName,VarName,Value,Time
-AsGlobalPV,gGlobalUInt,50,0
-AsGlobalPV,gGlobalString,Automated String,10
-AsGlobalPV,gTestStruct.TestBOOL,1,5

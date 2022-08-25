@@ -1,0 +1,8 @@
+﻿TaskName,VarName,Action,Value,Time
+AsGlobalPV,gGlobalUInt,Set,50,0
+AsGlobalPV,gGlobalString,Set,Automated String,10
+AsGlobalPV,gTestStruct.TestBOOL,Set,1,5
+AsGlobalPV,gGlobalUInt,Check,50,1
+AsGlobalPV,gGlobalString,Check,Automated String,11
+AsGlobalPV,gTestStruct.TestBOOL,Check,1,6
+AsGlobalPV,gTestStruct.TestUDINT,Get,,3
