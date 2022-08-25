@@ -3,6 +3,8 @@
   <StartPage pageRefId="PageHome" />
   <Pages>
     <Page refId="PageHome" />
+    <Page refId="PageAudit" />
+    <Page refId="PageAlarms" />
   </Pages>
   <Navigations>
     <Navigation refId="MainNavigation" />
@@ -10,10 +12,15 @@
   <BindingsSets>
     <BindingsSet refId="ContentInfo_binding" />
     <BindingsSet refId="ContentHome_binding" />
+    <BindingsSet refId="ContentAudit_binding" />
+    <BindingsSet refId="ContentAlarms_binding" />
   </BindingsSets>
   <EventBindingsSets />
   <Dialogs />
-  <Contents />
+  <Contents>
+    <Content refId="ContentAudit" />
+    <Content refId="ContentAlarms" />
+  </Contents>
   <SnippetsSets />
   <VariablesSets />
   <ExpressionsSets />

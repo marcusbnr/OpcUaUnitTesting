@@ -1,0 +1,3 @@
+VAR
+	fb_MpAlarmXCore : MpAlarmXCore;
+END_VAR

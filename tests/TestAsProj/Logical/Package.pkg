@@ -6,7 +6,10 @@
     <Object Type="File" Description="Global variables">Global.var</Object>
     <Object Type="Package" Description="Global libraries">Libraries</Object>
     <Object Type="Package">mappView</Object>
+    <Object Type="File">Project.language</Object>
     <Object Type="Program" Language="IEC">GetInfo</Object>
+    <Object Type="Program" Language="IEC">Audit</Object>
+    <Object Type="Program" Language="IEC">Alarms</Object>
     <Object Type="Program" Language="IEC">BasicTest</Object>
   </Objects>
 </Package>

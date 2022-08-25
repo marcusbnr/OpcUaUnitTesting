@@ -10,10 +10,20 @@ Marcus Mangel <marcus.mangel@br-automation.com>
 import sys
 from opcua import Client, ua, Node
 from datetime import datetime
+import csv
 
 ######## Structure Declarations ########
 
+class ConfigDef:
+    def __init__(self, taskName, varName, value, time):
+        self.taskName = taskName
+        self.varName = varName
+        self.value = value
+        self.time = time
+        self.done = False
 
+    def __repr__(self):
+        return repr((self.taskName, self.varName, self.value, self.time, self.done))
 
 ######## Declare Functions ########
 
@@ -46,13 +56,18 @@ def getPLCTasks(client):
 # Returns: A List of OpcUa nodes found on the Client
 def getPLCTags(client):
     # Get and display list of PLC tasks
-    ListOfTaskNodes = getPLCTasks(client)
-    ListOfTaskNames = []
-    for Task in ListOfTaskNodes:
-        TaskName = Task.get_browse_name()
-        ListOfTaskNames.append(TaskName.Name)
-    print("Tasks found:\n")
-    printList(ListOfTaskNames)
+    try:
+        ListOfTaskNodes = getPLCTasks(client)
+    except Exception as exc:
+        print('\n',exc)
+        raise Exception("Failed to get list of PLC tasks!")
+    else:
+        ListOfTaskNames = []
+        for Task in ListOfTaskNodes:
+            TaskName = Task.get_browse_name()
+            ListOfTaskNames.append(TaskName.Name)
+        print("Tasks found:\n")
+        printList(ListOfTaskNames)
     # User chooses a task
     TaskToSearch = input("Input the number of the task to examine: ")
     # Find variables that live within the given task
@@ -63,9 +78,15 @@ def getPLCTags(client):
 # Requires: The input datatype (inputStr) and the Variant Type required (variantType)
 # Modifies: Only local variables
 # Returns The converted value
-def convertOpcUaType(inputStr,variantType):
+def convertOpcUaType(inputStr, variantType):
     value = "Not converted yet"
-    if variantType == ua.VariantType.Boolean:
+    if variantType == ua.VariantType.String:
+        try:
+            value = inputStr
+        except:
+            raise ValueError("Invalid input. PLC variable is String")
+            return 0
+    elif variantType == ua.VariantType.Boolean:
         try:
             value = int(inputStr)
         except:
@@ -197,6 +218,36 @@ def setValueOfNode(client, taskName, varName, value):
         raise RuntimeError()
     return
 
+# Function which imports a CSV test config file
+# Expected format is "Variable name,value,time(s)"
+# For example: "AsGlobalPV:TestUSINT,50,10"
+# Requires: A valid file path
+# Modifies: Only local variables
+# Returns: A list of configuration defintions of ConfigDef datatype
+def importTestFile(filename):
+    configDefList = []
+    with open(filename, mode='r', encoding='utf-8-sig') as csvFile:
+        csvReader = csv.DictReader(csvFile)
+        lineCount = 0
+        for row in csvReader:
+            configDefList.append(ConfigDef(row["TaskName"],row["VarName"],row["Value"],float(row["Time"])))
+            lineCount += 1
+        print(f'Processed {lineCount} lines in CSV file')
+    return configDefList
+
+#
+def exportValuesToTestFile(ListOfVars, filename):
+    with open(filename, mode='w', newline='', encoding='utf-8-sig') as csvFile:
+        fieldnames = ['TaskName','VarName','Value','Time']
+        csvWriter = csv.DictWriter(csvFile, fieldnames = fieldnames)
+        csvWriter.writeheader()
+        lineCount = 0
+        for var in ListOfVars:
+            csvWriter.writerow({'TaskName':var.taskName, 'VarName':var.varName, 'Value':var.value, 'Time':var.time})
+            lineCount += 1
+        print(f'\nWrote {lineCount} lines to Output CSV file')
+    return
+
 # Function which shows the user a menu and processes responses
 # Requires: An OpcUa Client
 # Modifies: Only local variables
@@ -208,27 +259,39 @@ def menu(client):
     print("B. Get a list of PLC variables by task")
     print("C. Get the value of a specific PLC variable")
     print("D. Set the value of a specific PLC variable")
+    print("E. Import a list of variables to check")
+    print("F. Import a list of variables to set")
     print("Z. Disconnect")
     optionChoice = input()
     endMenu = False
 
     # Perform action based on chosen option
     if optionChoice == "A" or optionChoice == "a": # Get list of tasks as nodes
-        ListOfTaskNodes = getPLCTasks(client)
-        ListOfTaskNames = []
-        for Task in ListOfTaskNodes:
-            TaskName = Task.get_browse_name()
-            ListOfTaskNames.append(TaskName.Name)
-        print("Tasks found:\n")
-        printList(ListOfTaskNames)
+        try:
+            ListOfTaskNodes = getPLCTasks(client)
+        except Exception as exc:
+            print('\n', exc)
+            print("Get tasks failed!")
+        else:
+            ListOfTaskNames = []
+            for Task in ListOfTaskNodes:
+                TaskName = Task.get_browse_name()
+                ListOfTaskNames.append(TaskName.Name)
+            print("Tasks found:\n")
+            printList(ListOfTaskNames)
     elif optionChoice == "B" or optionChoice == "b": # Get a list of tasks, then tags
-        ListOfPVNodes = getPLCTags(client)
-        ListOfTagNames = []
-        for PVNode in ListOfPVNodes:
-            TagName = PVNode.get_browse_name()
-            ListOfTagNames.append(TagName.Name)
-        print("\nTags found:")
-        printList(ListOfTagNames)
+        try:
+            ListOfPVNodes = getPLCTags(client)
+        except Exception as exc:
+            print('\n', exc)
+            print("Get variables failed!")
+        else:
+            ListOfTagNames = []
+            for PVNode in ListOfPVNodes:
+                TagName = PVNode.get_browse_name()
+                ListOfTagNames.append(TagName.Name)
+            print("\nTags found:")
+            printList(ListOfTagNames)
     elif optionChoice == "C" or optionChoice == "c": # Get a specific variable value
         taskName = input("Enter the name of the task as it exists on the PLC (use AsGlobalPV for Global variables): ")
         varName = input("Enter the name of the variable as it exists on the PLC: ")
@@ -254,6 +317,61 @@ def menu(client):
             print("Variable was not set!")
         else:
             print("Variable set successfully. The value is now:", getValueOfNode(client, taskName, varName))
+    elif optionChoice == "E" or optionChoice == "e": # Import a list of vars to get
+        # Import CSV file and create a list of variables to get sorted by time
+        inputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/OpcUaUnitTesting/config/VarsToGet.csv" #input("Enter the path to a valid input file (CSV format): ")
+        outputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/outfiles/Output.csv" #input("Enter the path to where the output file should be saved: ")
+        ListOfVars = importTestFile(inputCsvFileName)
+        ListOfVars = sorted(ListOfVars, key=lambda ConfigDef: ConfigDef.time)
+        # Start getting variables in order when the get time is reached
+        startTime = datetime.now()
+        finishedVars = 0
+        print("Getting list of variables starting at", startTime)
+        print("Getting list of variables will take", ListOfVars[len(ListOfVars) - 1].time, "seconds")
+        while(finishedVars < len(ListOfVars)):
+            timeElapsed = datetime.now() - startTime
+            timeElapsed = timeElapsed.total_seconds()
+            if ListOfVars[finishedVars].time <= timeElapsed:
+                print("\nGetting",ListOfVars[finishedVars].varName)
+                try:
+                    Value = getValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName)
+                except:
+                    print("Get Value failed!")
+                else:
+                    print("The value of the chosen variable is: " + str(Value))
+                    ListOfVars[finishedVars].value = Value
+                finishedVars += 1
+        exportValuesToTestFile(ListOfVars, outputCsvFileName)
+        print("Finished getting",finishedVars,"variables at",datetime.now())
+    elif optionChoice == "F" or optionChoice == "f": # Import a list of vars to set
+        # Import CSV file and create a list of variables to set sorted by time
+        csvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/OpcUaUnitTesting/config/VarsToSet.csv" #input("Enter the path to a valid input file (CSV format): ")
+        ListOfVars = importTestFile(csvFileName)
+        ListOfVars = sorted(ListOfVars, key=lambda ConfigDef: ConfigDef.time)
+        # Start setting variables in order when the set time is reached
+        startTime = datetime.now()
+        finishedVars = 0
+        print("Setting list of variables starting at", startTime)
+        print("Setting list of variables will take", ListOfVars[len(ListOfVars) - 1].time, "seconds")
+        while(finishedVars < len(ListOfVars)):
+            timeElapsed = datetime.now() - startTime
+            timeElapsed = timeElapsed.total_seconds()
+            if ListOfVars[finishedVars].time <= timeElapsed:
+                print("Setting",ListOfVars[finishedVars].varName,"to",ListOfVars[finishedVars].value)
+                try:
+                    setValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName, ListOfVars[finishedVars].value)
+                except ValueError as ve:
+                    print(ve)
+                    print("Variable was not set!")
+                except RuntimeError as re:
+                    print(re)
+                    print("Variable was not set!")
+                except:
+                    print("Variable was not set!")
+                else:
+                    print("Variable set successfully. The value is now:", getValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName))
+                finishedVars += 1
+        print("\nFinished setting",finishedVars,"variables at",datetime.now())
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message
@@ -276,7 +394,7 @@ def menu(client):
 
 def main():
     # Get connection parameters from the User
-    clientIp = "172.27.224.1" #= input("Enter PLC IP Address: ")
+    clientIp = "172.21.176.1" #= input("Enter PLC IP Address: ")
     clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
     clientUserName = "" #= input("Enter Username for connection, or leave blank for Anonymous connection: ")
 
@@ -307,9 +425,8 @@ if __name__ == '__main__':
     main()
 
 # To Do:
-# -Test REAL and LREAL
-# -Check each input before continuing (check task, then var, then value)
-# -Make sure you can get values from structs
+# -Number of connected clients
+# -Methods
 
 # Example Notes
     # client = Client("opc.tcp://admin@localhost:4840") #connect using a user

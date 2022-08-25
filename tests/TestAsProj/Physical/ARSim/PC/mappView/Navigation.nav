@@ -1,8 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ndef:Navigation id="MainNavigation" xmlns:ndef="http://www.br-automation.com/iat2015/navigationDefinition/v2">
-  <NavigationPaths>
-    <NavigationPath refId="PageHome">
-      <Destination refId="PageHome" index="0" />
+    <NavigationPaths>
+        <NavigationPath refId="PageHome">
+            <Destination refId="PageHome" index="0" />
+            <Destination refId="PageAudit" index="1" />
+            <Destination refId="PageAlarms" index="2" />
         </NavigationPath>
-  </NavigationPaths>
+        <NavigationPath refId="PageAudit">
+            <Destination refId="PageHome" index="0" />
+            <Destination refId="PageAudit" index="1" />
+            <Destination refId="PageAlarms" index="2" />
+        </NavigationPath>
+        <NavigationPath refId="PageAlarms">
+            <Destination refId="PageHome" index="0" />
+            <Destination refId="PageAudit" index="1" />
+            <Destination refId="PageAlarms" index="2" />
+        </NavigationPath>
+    </NavigationPaths>
 </ndef:Navigation>

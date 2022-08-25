@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Configuration>
+  <Element ID="TextConfig" Type="TextConfig">
+    <Group ID="Languages">
+      <Property ID="UserDefaultLanguage" Value="en" />
+      <Property ID="UserFallbackLanguage" Value="en" />
+      <Group ID="TargetLanguages">
+        <Property ID="TargetLanguage[1]" Value="en" />
+      </Group>
+    </Group>
+    <Group ID="TargetFiles">
+      <Property ID="TargetFile[1]" Value="Libraries.MpAudit.TxtEvent.tmx" />
+      <Property ID="TargetFile[2]" Value="Libraries.MpAudit.TxtDatapoints.tmx" />
+      <Property ID="TargetFile[3]" Value="Libraries.MpAudit.TxtCustom.tmx" />
+      <Property ID="TargetFile[4]" Value="Libraries.MpAudit.TxtUser.tmx" />
+      <Property ID="TargetFile[5]" Value="Libraries.MpAudit.TxtEventF.tmx" />
+      <Property ID="TargetFile[6]" Value="Libraries.MpAudit.TxtRecipe.tmx" />
+      <Property ID="TargetFile[7]" Value="Libraries.MpAudit.TxtUserF.tmx" />
+      <Property ID="TargetFile[8]" Value="Libraries.MpAudit.TxtRecipeF.tmx" />
+    </Group>
+  </Element>
+</Configuration>
