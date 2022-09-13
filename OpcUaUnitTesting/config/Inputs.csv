@@ -1,8 +1,8 @@
-﻿TaskName,VarName,Action,Value,Time
-AsGlobalPV,gGlobalUInt,Set,50,0
-AsGlobalPV,gGlobalString,Set,Automated String,10
-AsGlobalPV,gTestStruct.TestBOOL,Set,1,5
-AsGlobalPV,gGlobalUInt,Check,50,1
-AsGlobalPV,gGlobalString,Check,Automated String,11
-AsGlobalPV,gTestStruct.TestBOOL,Check,1,6
-AsGlobalPV,gTestStruct.TestUDINT,Get,,3
+﻿Action,TaskName,VarName,Input1,Input2
+Set,AsGlobalPV,gGlobalUInt,50,
+Set,AsGlobalPV,gGlobalString,Automated String,
+Set,AsGlobalPV,gTestStruct.TestBOOL,1,
+Check,AsGlobalPV,gGlobalUInt,50,=
+Check,AsGlobalPV,gGlobalString,Automated String,=
+Check,AsGlobalPV,gTestStruct.TestBOOL,1,=
+Get,AsGlobalPV,gTestStruct.TestUDINT,,

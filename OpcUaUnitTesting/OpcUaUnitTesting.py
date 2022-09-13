@@ -8,22 +8,38 @@ Marcus Mangel <marcus.mangel@br-automation.com>
 ######## Import Libraries ########
 
 import sys
+import os
+from os.path import exists
 from opcua import Client, ua, Node
 from datetime import datetime
 import csv
 
 ######## Structure Declarations ########
-
+# ConfigDef class is used for input configuration files
+# Each line of the input file is an instance of this class
 class ConfigDef:
-    def __init__(self, taskName, varName, action, value, time):
+    def __init__(self, action, taskName, varName, input1, input2):
+        self.action = action
         self.taskName = taskName
         self.varName = varName
-        self.action = action
-        self.value = value
-        self.time = time
+        self.input1 = input1
+        self.input2 = input2
 
     def __repr__(self):
-        return repr((self.taskName, self.varName, self.action, self.value, self.time))
+        return repr((self.action, self.taskName, self.varName, self.input1, self.input2))
+
+# ResultDef class is used for output result files
+# Each line of the output file is an instance of this class
+class ResultDef:
+    def __init__(self, action, taskName, varName):
+        self.action = action
+        self.taskName = taskName
+        self.varName = varName
+        self.status = "Initialized"
+        self.output = " "
+
+    def __repr__(self):
+        return repr((self.action, self.taskName, self.varName, self.status, self.output))
 
 ######## Declare Functions ########
 
@@ -218,6 +234,54 @@ def setValueOfNode(client, taskName, varName, value):
         raise RuntimeError()
     return
 
+# Checks the value of a variable on the PLC against a condition
+# Supported conditions: =, <, >, <=, >=
+# Requires An OpcUa Client, the name of a Task and the name of a Variable in that task,
+# a value to check against, and a condition with which to do the check
+# Modifies: Only local variables
+# Returns the result of the check as a boolean
+def checkValueOfNode(client, taskName, varName, checkValue, condition):
+    # Get the value of the node on the server
+    value = getValueOfNode(client,taskName,varName)
+    # Get the datatype of the node on the server
+    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    node = client.get_node(nodeName)
+    variantType = node.get_data_type_as_variant_type()
+    # Convert the checkValue to the correct datatype
+    checkValue = convertOpcUaType(checkValue,variantType)
+
+    # Perform the check
+    if condition == '=':
+        print(value)
+        print(checkValue)
+        if value == checkValue:
+            return True
+        else:
+            return False
+    elif condition == '>':
+        if value > checkValue:
+            return True
+        else:
+            return False
+    elif condition == '<':
+        if value < checkValue:
+            return True
+        else:
+            return False
+    elif condition == '>=':
+        if value >= checkValue:
+            return True
+        else:
+            return False
+    elif condition == '<=':
+        if value <= checkValue:
+            return True
+        else:
+            return False
+    else:
+        print("Invalid condition")
+        return False
+
 # Function which imports a CSV test config file
 # Expected format is "Variable name,value,time(s)"
 # For example: "AsGlobalPV:TestUSINT,50,10"
@@ -230,20 +294,23 @@ def importTestFile(filename):
         csvReader = csv.DictReader(csvFile)
         lineCount = 0
         for row in csvReader:
-            configDefList.append(ConfigDef(row["TaskName"],row["VarName"],row["Action"],row["Value"],float(row["Time"])))
+            configDefList.append(ConfigDef(row["Action"],row["TaskName"],row["VarName"],row["Input1"],row["Input2"]))
             lineCount += 1
         print(f'Processed {lineCount} lines in CSV file')
     return configDefList
 
-#
+# Function which exports a CSV test results file
+# Requires: A list of ResultDef types and a valid file path for the CSV file
+# Modifies: The output file
+# Returns: Nothing
 def exportValuesToTestFile(ListOfVars, filename):
     with open(filename, mode='w', newline='', encoding='utf-8-sig') as csvFile:
-        fieldnames = ['TaskName','VarName','Action','Value','Time']
+        fieldnames = ['Action','TaskName','VarName','Status','Output']
         csvWriter = csv.DictWriter(csvFile, fieldnames = fieldnames)
         csvWriter.writeheader()
         lineCount = 0
         for var in ListOfVars:
-            csvWriter.writerow({'TaskName':var.taskName, 'VarName':var.varName, 'Action':var.action, 'Value':var.value, 'Time':var.time})
+            csvWriter.writerow({'Action':var.action,'TaskName':var.taskName,'VarName':var.varName,'Status':var.status,'Output':var.output})
             lineCount += 1
         print(f'\nWrote {lineCount} lines to Output CSV file')
     return
@@ -320,58 +387,83 @@ def menu(client):
         # Get filenames from user
         inputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/OpcUaUnitTesting/config/Inputs.csv" #input("Enter the path to a valid input file (CSV format): ")
         outputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/outfiles/Output.csv" #input("Enter the path to where the output file should be saved: ")
+        # Check for existing output file
+        if exists(outputCsvFileName):
+            ShouldIDeleteFile = input(("Output file already exists. The existing file will be overwritten. Continue? Y/N "))
+            if ShouldIDeleteFile == 'Y' or ShouldIDeleteFile == 'y':
+                pass
+            elif ShouldIDeleteFile == 'N' or ShouldIDeleteFile == 'n':
+                print("Aborting")
+                return menu(client)
+            else:
+                print("Invalid input. Aborting")
+                return menu(client)
         # Import CSV file and create a list of variables to get sorted by time
-        ListOfVars = importTestFile(inputCsvFileName)
-        ListOfVars = sorted(ListOfVars, key=lambda ConfigDef: ConfigDef.time)
-        # Start getting variables in order when the get time is reached
+        ListOfInputs = importTestFile(inputCsvFileName)
+        ListOfOutputs = []
         startTime = datetime.now()
         finishedVars = 0
         print("Processing list of variables starting at", startTime)
-        print("Processing list of variables will take", ListOfVars[len(ListOfVars) - 1].time, "seconds")
-        while(finishedVars < len(ListOfVars)):
-            timeElapsed = datetime.now() - startTime
-            timeElapsed = timeElapsed.total_seconds()
-            if ListOfVars[finishedVars].time <= timeElapsed:
-                if (ListOfVars[finishedVars].action == 'Get'):
-                    print("\nGetting",ListOfVars[finishedVars].varName)
-                    try:
-                        Value = getValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName)
-                    except:
-                        print("Get Value failed!")
-                    else:
-                        print("The value of the chosen variable is: " + str(Value))
-                        ListOfVars[finishedVars].value = Value
-                elif (ListOfVars[finishedVars].action == 'Set'):
-                    print("\nSetting",ListOfVars[finishedVars].varName,"to",ListOfVars[finishedVars].value)
-                    try:
-                        setValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName, ListOfVars[finishedVars].value)
-                    except ValueError as ve:
-                        print(ve)
-                        print("Variable was not set!")
-                    except RuntimeError as re:
-                        print(re)
-                        print("Variable was not set!")
-                    except:
-                        print("Variable was not set!")
-                    else:
-                        print("Variable set successfully. The value is now:", getValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName))
-                elif (ListOfVars[finishedVars].action == 'Check'):
-                    print("\nChecking",ListOfVars[finishedVars].varName)
-                    try:
-                        Value = getValueOfNode(client, ListOfVars[finishedVars].taskName, ListOfVars[finishedVars].varName)
-                    except:
-                        print("Get Value failed!")
-                    else:
-                        print("The value of the chosen variable is: " + str(Value))
-                        if Value == ListOfVars[finishedVars].value:
-                            ListOfVars[finishedVars].value = 'Valid'
-                        else:
-                            ListOfVars[finishedVars].value = 'Invalid'
+        # Process list in order
+        for CurrentVar in ListOfInputs:
+            ListOfOutputs.append(ResultDef(CurrentVar.action,CurrentVar.taskName,CurrentVar.varName))
+            if (CurrentVar.action == 'Get'):
+                print("\nGetting",CurrentVar.varName)
+                try:
+                    Value = getValueOfNode(client, CurrentVar.taskName, CurrentVar.varName)
+                except:
+                    print("Get Value failed!")
+                    ListOfOutputs[finishedVars].status = 'Fail'
                 else:
-                    print("Invalid action")
-                finishedVars += 1
-        exportValuesToTestFile(ListOfVars, outputCsvFileName)
-        print("Finished processing",finishedVars,"variables at",datetime.now())
+                    print("The value of the chosen variable is: " + str(Value))
+                    ListOfOutputs[finishedVars].status = 'Success'
+                    ListOfOutputs[finishedVars].output = Value
+            elif (CurrentVar.action == 'Set'):
+                print("\nSetting",CurrentVar.varName,"to",CurrentVar.input1)
+                try:
+                    setValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1)
+                except ValueError as ve:
+                    print(ve)
+                    print("Variable was not set!")
+                    ListOfOutputs[finishedVars].status = 'Fail'
+                except RuntimeError as re:
+                    print(re)
+                    print("Variable was not set!")
+                    ListOfOutputs[finishedVars].status = 'Fail'
+                except:
+                    print("Variable was not set!")
+                    ListOfOutputs[finishedVars].status = 'Fail'
+                else:
+                    print("Variable set successfully. The value is now:", getValueOfNode(client, CurrentVar.taskName, CurrentVar.varName))
+                    ListOfOutputs[finishedVars].status = 'Success'
+            elif (CurrentVar.action == 'Check'):
+                print("\nChecking",CurrentVar.varName)
+                try:
+                    checkResult = checkValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1, CurrentVar.input2)
+                except Exception as exc:
+                    print("Check Value failed!")
+                    print(exc)
+                    ListOfOutputs[finishedVars].status = 'Fail'
+                else:
+                    ListOfOutputs[finishedVars].status = 'Success'
+                    if checkResult:
+                        ListOfOutputs[finishedVars].output = 'Valid'
+                    else:
+                        ListOfOutputs[finishedVars].output = 'Invalid'
+            elif (CurrentVar.action == 'Wait'):
+                #To Do not yet implimented
+                pass
+            else:
+                print("Invalid action")
+            finishedVars += 1
+        # Export results
+        try:
+            exportValuesToTestFile(ListOfOutputs, outputCsvFileName)
+        except Exception as exc:
+            print("Failed to write output file")
+            print(exc)
+        finally:
+            print("Finished processing",finishedVars,"variables at",datetime.now())
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message
@@ -394,7 +486,7 @@ def menu(client):
 
 def main():
     # Get connection parameters from the User
-    clientIp = "172.21.176.1" #= input("Enter PLC IP Address: ")
+    clientIp = "172.22.176.1" #= input("Enter PLC IP Address: ")
     clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
     clientUserName = "" #= input("Enter Username for connection, or leave blank for Anonymous connection: ")
 
