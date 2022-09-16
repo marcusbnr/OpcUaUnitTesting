@@ -2,6 +2,7 @@
 Set,AsGlobalPV,gGlobalUInt,50,
 Set,AsGlobalPV,gGlobalString,Automated String,
 Set,AsGlobalPV,gTestStruct.TestBOOL,1,
+Wait,,,5,
 Check,AsGlobalPV,gGlobalUInt,50,=
 Check,AsGlobalPV,gGlobalString,Automated String,=
 Check,AsGlobalPV,gTestStruct.TestBOOL,1,=

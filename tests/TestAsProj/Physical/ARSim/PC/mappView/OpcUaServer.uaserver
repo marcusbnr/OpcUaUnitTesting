@@ -5,7 +5,7 @@
     <Group ID="DefaultOpcUaServer">
       <Property ID="Alias" />
       <Property ID="Hostname" />
-      <Property ID="IPAddress" Value="172.22.176.1" />
+      <Property ID="IPAddress" Value="172.20.16.1" />
       <Property ID="Port" Value="4840" />
       <Property ID="EndpointUrl" />
       <Property ID="DefaultNamespace" Value="urn:B&amp;R/pv/" />
