@@ -10,6 +10,7 @@ Marcus Mangel <marcus.mangel@br-automation.com>
 import sys
 import os
 from os.path import exists
+import logging
 from opcua import Client, ua, Node
 from datetime import datetime
 import csv
@@ -41,6 +42,10 @@ class ResultDef:
     def __repr__(self):
         return repr((self.action, self.taskName, self.varName, self.status, self.output))
 
+######## Constant Variables ########
+
+BNR_TASKS_PATH = "ns=6;s=::"
+
 ######## Declare Functions ########
 
 # Function which prints a List to the console
@@ -60,7 +65,7 @@ def printList(List):
 # Modifies: Only local variables
 # Returns: A List of Nodes found on the Client that correspond to PLC tasks
 def getPLCTasks(client):
-    ServerTasksRootNode = client.get_node("ns=6;s=::")
+    ServerTasksRootNode = client.get_node(BNR_TASKS_PATH)
     ListOfTaskNodes = ServerTasksRootNode.get_children()
     return ListOfTaskNodes
 
@@ -186,7 +191,7 @@ def convertOpcUaType(inputStr, variantType):
 # Returns the value using OpcUa Client get_value() function
 def getValueOfNode(client, taskName, varName):
     # Find the requested node on the server
-    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    nodeName = BNR_TASKS_PATH + taskName + ":" + varName
     try:
         node = client.get_node(nodeName)
     except Exception as exc:
@@ -210,7 +215,7 @@ def getValueOfNode(client, taskName, varName):
 # Returns: Nothing
 def setValueOfNode(client, taskName, varName, value):
     # Find the requested node on the server
-    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    nodeName = BNR_TASKS_PATH + taskName + ":" + varName
     try:
         node = client.get_node(nodeName)
     except Exception as exc:
@@ -244,7 +249,7 @@ def checkValueOfNode(client, taskName, varName, checkValue, condition):
     # Get the value of the node on the server
     value = getValueOfNode(client,taskName,varName)
     # Get the datatype of the node on the server
-    nodeName = "ns=6;s=::" + taskName + ":" + varName
+    nodeName = BNR_TASKS_PATH + taskName + ":" + varName
     node = client.get_node(nodeName)
     variantType = node.get_data_type_as_variant_type()
     # Convert the checkValue to the correct datatype
@@ -320,51 +325,48 @@ def exportValuesToTestFile(ListOfVars, filename):
 def processTestFileEntry(client, CurrentVar):
     OutputEntry = ResultDef(CurrentVar.action,CurrentVar.taskName,CurrentVar.varName)
     if (CurrentVar.action == 'Get'):
-        print("\nGetting",CurrentVar.varName)
+        logging.info('Getting %s',CurrentVar.varName)
         try:
             Value = getValueOfNode(client, CurrentVar.taskName, CurrentVar.varName)
         except:
-            print("Get Value failed!")
+            logging.warning('Get Value failed!')
             OutputEntry.status = 'Fail'
         else:
-            print("The value of the chosen variable is: " + str(Value))
+            logging.info('The value of the chosen variable is: %s', str(Value))
             OutputEntry.status = 'Success'
             OutputEntry.output = Value
     elif (CurrentVar.action == 'Set'):
-        print("\nSetting",CurrentVar.varName,"to",CurrentVar.input1)
+        logging.info('Setting %s to %s', CurrentVar.varName, CurrentVar.input1)
         try:
             setValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1)
         except ValueError as ve:
-            print(ve)
-            print("Variable was not set!")
+            logging.warning('Variable was not set! %s', ve)
             OutputEntry.status = 'Fail'
         except RuntimeError as re:
-            print(re)
-            print("Variable was not set!")
+            logging.warning('Variable was not set! %s', re)
             OutputEntry.status = 'Fail'
         except:
-            print("Variable was not set!")
+            logging.warning('Variable was not set!')
             OutputEntry.status = 'Fail'
         else:
-            print("Variable set successfully. The value is now:", getValueOfNode(client, CurrentVar.taskName, CurrentVar.varName))
+            logging.info('Variable set successfully')
             OutputEntry.status = 'Success'
     elif (CurrentVar.action == 'Check'):
-        print("\nChecking",CurrentVar.varName)
+        logging.info('Checking %s', CurrentVar.varName)
         try:
             checkResult = checkValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1, CurrentVar.input2)
         except Exception as exc:
-            print("Check Value failed!")
-            print(exc)
+            logging.warning('Check Value failed! %s', exc)
             OutputEntry.status = 'Fail'
         else:
             OutputEntry.status = 'Success'
+            logging.info('Check value completed successfully')
             if checkResult:
                 OutputEntry.output = 'Valid'
             else:
                 OutputEntry.output = 'Invalid'
     elif (CurrentVar.action == 'Wait'):
-        #To Do not yet implimented
-        print("\nWaiting for", CurrentVar.input1, "seconds")
+        print('Waiting for', CurrentVar.input1, 'seconds')
         startTime = datetime.now()
         timeElapsedInSeconds = 0
         timeToWait = int(CurrentVar.input1)
@@ -374,7 +376,7 @@ def processTestFileEntry(client, CurrentVar):
             timeElapsedInSeconds = timeElapsed.total_seconds()
         OutputEntry.status = 'Success'
     else:
-        print("Invalid action")
+        logging.warning("Invalid action requested")
     return OutputEntry
 
 # Function which shows the user a menu and processes responses
@@ -466,22 +468,22 @@ def menu(client):
         startTime = datetime.now()
         ListOfOutputs = []
         finishedVars = 0
-        print("\nProcessing list of variables starting at", startTime)
+        print("\nProcessing list of", len(ListOfInputs), "variables starting at", startTime)
         # Process list in order
         for CurrentVar in ListOfInputs:
             try:
                 OutputEntry = processTestFileEntry(client, CurrentVar)
             except Exception as exc:
-                print(exc)
-            else:
+                logging.warning('Error processing line %i: %s', finishedVars + 1, exc)
+            finally:
                 ListOfOutputs.append(OutputEntry)
                 finishedVars += 1
+                print("Processed line", finishedVars, "of", len(ListOfInputs))
         # Export results
         try:
             exportValuesToTestFile(ListOfOutputs, outputCsvFileName)
         except Exception as exc:
-            print("Failed to write output file")
-            print(exc)
+            logging.warning('Failed to write output file: %s', exc)
         finally:
             print("Finished processing",finishedVars,"variables at",datetime.now())
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
@@ -505,6 +507,9 @@ def menu(client):
 ######## Main ########
 
 def main():
+    # Initialize logging
+    logging.basicConfig(filename="OpcUaUnitTesting_Log.txt", level=logging.INFO, filemode="w")
+
     # Get connection parameters from the User
     clientIp = "172.20.16.1" #= input("Enter PLC IP Address: ")
     clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
