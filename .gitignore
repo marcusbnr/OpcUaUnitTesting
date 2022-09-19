@@ -4,8 +4,8 @@ venv/
 # Outfiles
 Outfiles/
 
-# Log file 
-OpcUaUnitTesting/OpcUaUnitTesting_Log.txt
+# Log file s
+*.log
 
 # Python Package
 dist/

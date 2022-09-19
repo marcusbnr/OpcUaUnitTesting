@@ -508,7 +508,7 @@ def menu(client):
 
 def main():
     # Initialize logging
-    logging.basicConfig(filename="OpcUaUnitTesting_Log.txt", level=logging.INFO, filemode="w")
+    logging.basicConfig(filename="OpcUaUnitTesting_Log.log", level=logging.INFO, filemode="w")
 
     # Get connection parameters from the User
     clientIp = "172.19.96.1" #= input("Enter PLC IP Address: ")
