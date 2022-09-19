@@ -511,28 +511,28 @@ def main():
     logging.basicConfig(filename="OpcUaUnitTesting_Log.txt", level=logging.INFO, filemode="w")
 
     # Get connection parameters from the User
-    clientIp = "172.20.16.1" #= input("Enter PLC IP Address: ")
+    clientIp = "172.19.96.1" #= input("Enter PLC IP Address: ")
     clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
-    clientUserName = "" #= input("Enter Username for connection, or leave blank for Anonymous connection: ")
-
+    clientUserName = input("Enter Username for connection, or leave blank for Anonymous connection: ")
+    clientPassWord = ""
     if clientUserName == "":
         clientPath = "opc.tcp://" + clientIp + ":" + clientPort
+        printableClientPath = clientPath
     else:
-        clientPath = "opc.tcp://" + clientUserName + "@" + clientIp + ":" + clientPort
-    print("Connecting to:", clientPath)
+        clientPassWord = input("Enter Password for connection: ")
+        clientPath = "opc.tcp://" + clientUserName + ":" + clientPassWord + "@" + clientIp + ":" + clientPort
+        printableClientPath = "opc.tcp://" + clientUserName + "@" + clientIp + ":" + clientPort # Don't print password
 
     # Define the Client using connection parameters
     client = Client(clientPath)
 
     # Try to make the connection to the Client
+    print("Connecting to:", printableClientPath)
     try:
         client.connect()
     # Handle exceptions
-    except ConnectionRefusedError:
-        print("Connection refused (Error Number 111)")
-        return
-    except:
-        print("Connection Failed!")
+    except Exception as exc:
+        print("Connection Failed!", exc)
         return
 
     # When connection is successful, show the option menu

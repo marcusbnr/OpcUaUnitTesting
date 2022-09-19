@@ -4,6 +4,9 @@ venv/
 # Outfiles
 Outfiles/
 
+# Log file 
+OpcUaUnitTesting/OpcUaUnitTesting_Log.txt
+
 # Python Package
 dist/
 *.egg-info/
