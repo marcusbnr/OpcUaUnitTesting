@@ -1,0 +1,19 @@
+VAR
+	WaterLevel : REAL; (*Level of the water in the heater [%]*)
+	WaterTemperature : REAL; (*Temperature of the water in the heater [deg C]*)
+	HeaterOn : BOOL; (*Heater is ON if TRUE*)
+	FillValveOpen : BOOL; (*Fill Valve is OPEN if TRUE*)
+	DrainValveOpen : BOOL; (*Drain Valve is OPEN if TRUE*)
+	HeatRate : REAL; (*Rate of water temperature rise [deg C/sec]*)
+	CoolRate : REAL; (*Rate of water temperature fall [deg C/sec]*)
+	FillRate : REAL; (*Rate of fill [%/sec]*)
+	DrainRate : REAL; (*Rate of drain [%/sec]*)
+END_VAR
+(*Constants*)
+VAR CONSTANT
+	CYCLES_PER_SECOND : REAL := 5.0; (*PLC cycles per second*)
+	BASE_TEMPERATURE : REAL := 20.0; (*Lowest possible water temperature [deg C]*)
+	MAX_TEMPERATURE : REAL := 100.0; (*Highest possible water temperature [deg C]*)
+	MIN_LEVEL : REAL := 5.0; (*Minimum water level [%]*)
+	MAX_LEVEL : REAL := 100.0; (*Maximum water level [%]*)
+END_VAR

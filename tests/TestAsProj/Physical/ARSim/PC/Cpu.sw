@@ -3,6 +3,7 @@
 <SwConfiguration CpuAddress="SL1" xmlns="http://br-automation.co.at/AS/SwConfiguration">
   <TaskClass Name="Cyclic#1">
     <Task Name="BasicTest" Source="BasicTest.prg" Memory="UserROM" Language="IEC" Debugging="true" />
+    <Task Name="WaterHeat" Source="WaterHeat.prg" Memory="UserROM" Language="IEC" Debugging="true" />
   </TaskClass>
   <TaskClass Name="Cyclic#2">
     <Task Name="GetInfo" Source="GetInfo.prg" Memory="UserROM" Language="IEC" Debugging="true" />
@@ -21,6 +22,8 @@
     <BinaryObject Name="FWRules" Source="" Memory="UserROM" Language="Binary" />
     <BinaryObject Name="OpcUaSrv" Source="" Memory="UserROM" Language="Binary" />
     <BinaryObject Name="TCData" Source="" Memory="SystemROM" Language="Binary" />
+    <BinaryObject Name="arsvcreg" Source="" Memory="UserROM" Language="Binary" />
+    <BinaryObject Name="TCLang" Source="" Memory="UserROM" Language="Binary" />
     <BinaryObject Name="sysconf" Source="" Memory="SystemROM" Language="Binary" />
     <BinaryObject Name="Role" Source="" Memory="UserROM" Language="Binary" />
     <BinaryObject Name="User" Source="" Memory="UserROM" Language="Binary" />
@@ -29,6 +32,9 @@
     <BinaryObject Name="asfw" Source="" Memory="SystemROM" Language="Binary" />
     <BinaryObject Name="arconfig" Source="" Memory="SystemROM" Language="Binary" />
     <BinaryObject Name="ashwac" Source="" Memory="UserROM" Language="Binary" />
+    <BinaryObject Name="Config_1" Source="" Memory="UserROM" Language="Binary" />
+    <BinaryObject Name="TC" Source="" Memory="UserROM" Language="Binary" />
+    <BinaryObject Name="Config" Source="" Memory="UserROM" Language="Binary" />
   </Binaries>
   <Libraries>
     <LibraryObject Name="AsARCfg" Source="Libraries.AsARCfg.lby" Memory="UserROM" Language="binary" Debugging="true" />
@@ -41,5 +47,9 @@
     <LibraryObject Name="arssl" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="fileio" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
     <LibraryObject Name="asieccon" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
+    <LibraryObject Name="aruser" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
+    <LibraryObject Name="sys_lib" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
+    <LibraryObject Name="dataobj" Source="" Memory="UserROM" Language="Binary" Debugging="true" />
+    <LibraryObject Name="standard" Source="Libraries.standard.lby" Memory="UserROM" Language="binary" Debugging="true" />
   </Libraries>
 </SwConfiguration>

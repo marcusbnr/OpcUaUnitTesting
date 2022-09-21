@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content id="ContentWaterHeater" height="840" width="1180" xmlns="http://www.br-automation.com/iat2015/contentDefinition/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Widgets>
+    <Widget xsi:type="widgets.brease.LinearGauge" id="LinearGaugeWaterLevel" top="40" left="80" width="1020" height="80" zIndex="0" areasSize="30" format="{'metric':{'decimalPlaces':0,'minimumIntegerDigits':1},'imperial':{'decimalPlaces':0,'minimumIntegerDigits':1},'imperial-us':{'decimalPlaces':0,'minimumIntegerDigits':1}}" minorTicks="0" pointerSize="40" unit="{'metric':'P1','imperial':'P1','imperial-us':'P1'}" scaleWidth="4px" majorTicksWidth="5px" scaleFontSize="20px" />
+    <Widget xsi:type="widgets.brease.NumericOutput" id="NumericOutput1" top="180" left="640" width="160" height="40" zIndex="1" unit="{'metric':'CEL','imperial':'CEL','imperial-us':'CEL'}" unitAlign="right" fontSize="30px" unitFontSize="22px" />
+    <Widget xsi:type="widgets.brease.Label" id="LabelWaterTemp" top="160" left="280" width="320" height="80" zIndex="2" text="Water Temperature:" fontSize="32px" bold="true" />
+    <Widget xsi:type="widgets.brease.ToggleButton" id="ToggleButtonHeater" top="480" left="200" width="182" height="60" zIndex="3" text="Heater" fontSize="30px" />
+    <Widget xsi:type="widgets.brease.ToggleButton" id="ToggleButtonFillValve" top="480" left="480" width="182" height="60" zIndex="4" text="Fill Valve" fontSize="30px" />
+    <Widget xsi:type="widgets.brease.ToggleButton" id="ToggleButtonDrainValve" top="480" left="760" width="182" height="60" zIndex="5" text="Drain Valve" fontSize="30px" />
+    <Widget xsi:type="widgets.brease.NumericInput" id="NumericInputHeatRate" top="620" left="211" width="160" height="40" zIndex="6" unit="{'metric':'H14','imperial':'H14','imperial-us':'H14'}" unitAlign="right" fontSize="30px" unitFontSize="22px" />
+    <Widget xsi:type="widgets.brease.NumericInput" id="NumericInputFillRate" top="620" left="491" width="160" height="40" zIndex="7" unit="{'metric':'P1','imperial':'P1','imperial-us':'P1'}" unitAlign="right" fontSize="30px" unitFontSize="22px" />
+    <Widget xsi:type="widgets.brease.NumericInput" id="NumericInputDrainRate" top="620" left="771" width="160" height="40" zIndex="8" unit="{'metric':'P1','imperial':'P1','imperial-us':'P1'}" unitAlign="right" fontSize="30px" unitFontSize="22px" />
+    <Widget xsi:type="widgets.brease.NumericInput" id="NumericInputCoolRate" top="680" left="211" width="160" height="40" zIndex="9" unit="{'metric':'H14','imperial':'H14','imperial-us':'H14'}" unitAlign="right" fontSize="30px" unitFontSize="22px" />
+    <Widget xsi:type="widgets.brease.Label" id="LabelHeatRate" top="620" left="100" width="100" height="40" zIndex="10" text="Heat:" fontSize="28px" bold="true" />
+    <Widget xsi:type="widgets.brease.Label" id="LabelCoolRate" top="680" left="100" width="100" height="40" zIndex="11" text="Cool:" fontSize="28px" bold="true" />
+    <Widget xsi:type="widgets.brease.Label" id="LabelFillRate" top="580" left="481" width="180" height="40" zIndex="12" text="Fill Rate:" textAlign="center" fontSize="28px" bold="true" />
+    <Widget xsi:type="widgets.brease.Label" id="LabelDrainRate" top="580" left="761" width="180" height="40" zIndex="13" text="Drain Rate:" textAlign="center" fontSize="28px" bold="true" />
+  </Widgets>
+</Content>

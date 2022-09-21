@@ -11,5 +11,6 @@
     <Object Type="Program" Language="IEC">Audit</Object>
     <Object Type="Program" Language="IEC">Alarms</Object>
     <Object Type="Program" Language="IEC">BasicTest</Object>
+    <Object Type="Program" Language="IEC">WaterHeat</Object>
   </Objects>
 </Package>

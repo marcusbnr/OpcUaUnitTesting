@@ -16,6 +16,7 @@ from datetime import datetime
 import csv
 
 ######## Structure Declarations ########
+
 # ConfigDef class is used for input configuration files
 # Each line of the input file is an instance of this class
 class ConfigDef:
@@ -44,7 +45,7 @@ class ResultDef:
 
 ######## Constant Variables ########
 
-BNR_TASKS_PATH = "ns=6;s=::"
+BNR_TASKS_PATH = "ns=6;s=::" # OpcUa address where tasks on a B&R PLC can be found
 
 ######## Declare Functions ########
 
@@ -80,8 +81,9 @@ def getPLCTags(client):
     try:
         ListOfTaskNodes = getPLCTasks(client)
     except Exception as exc:
-        print('\n',exc)
-        raise Exception("Failed to get list of PLC tasks!")
+        print(exc)
+        raise Exception("Failed to get PLC task nodes!")
+        return []
     else:
         ListOfTaskNames = []
         for Task in ListOfTaskNodes:
@@ -183,6 +185,11 @@ def convertOpcUaType(inputStr, variantType):
         except:
             raise ValueError("Invalid input. PLC variable is DateTime")
             return 0
+
+    if value == "Not converted yet":
+        raise ValueError("Server VariantType is not supported by this application")
+        return 0
+
     return value
 
 # Gets the value of a variable on the PLC
@@ -195,21 +202,19 @@ def getValueOfNode(client, taskName, varName):
     try:
         node = client.get_node(nodeName)
     except Exception as exc:
-        print('\n',Exc)
-        raise RuntimeError()
+        raise Exception(exc)
         return 0
     # Get the Node's value
     try:
         value = node.get_value()
     except Exception as exc:
-        print('\n',exc)
-        raise RuntimeError()
+        raise Exception(exc)
         return 0
     else:
         return value
 
 # Sets the value of a variable on the PLC
-# Requires An OpcUa Client, the name of a Task,
+# Requires: An OpcUa Client, the name of a Task,
 # the name of a Variable in that task, and a Value to set
 # Modifies: The value of the OpcUa Node on the remote client
 # Returns: Nothing
@@ -219,8 +224,7 @@ def setValueOfNode(client, taskName, varName, value):
     try:
         node = client.get_node(nodeName)
     except Exception as exc:
-        print('\n',exc)
-        raise RuntimeError()
+        raise Exception(exc)
         return
     # Get the datatype of the node on the server
     variantType = node.get_data_type_as_variant_type()
@@ -228,16 +232,60 @@ def setValueOfNode(client, taskName, varName, value):
     try:
         value = convertOpcUaType(value,variantType)
     except ValueError as ve:
-        print(ve)
-        raise ValueError()
+        raise Exception(ve)
         return
     # Set the variable's value
     try:
         node.set_value(ua.DataValue(ua.Variant(value, variantType)))
     except Exception as exc:
-        print('\n',exc)
-        raise RuntimeError()
+        raise Exception(exc)
     return
+
+# Parses a Range Definition input string
+# and returns a list containing the individual components of the definition
+# Requires: An input string in the form "[1,2]"
+# The first character can either be [ for >= or ( for <
+# The second character can either be ] for <= or ) for <
+# In between, there should be two numbers seperated by a comma
+# Modifies: Only local variables
+# Returns: A list in the form of [condition 1, value 1, condition 2, value 2]
+# or an empty list if the input is invalid
+def parseRangeParameters(inputString):
+    rangeDef = []
+    stringLength = len(inputString)
+    firstChar = inputString[0]
+    lastChar = inputString[stringLength - 1]
+    commaLoc = 0
+
+    while commaLoc < stringLength:
+        if inputString[commaLoc] == ',':
+            break
+        commaLoc = commaLoc + 1
+
+    if commaLoc == stringLength:
+        raise ValueError("Expected a comma in the range definition")
+        return []
+
+    if firstChar == '[':
+        rangeDef.append('>=')
+    elif firstChar == '(':
+        rangeDef.append('>')
+    else:
+        raise ValueError("Expected first character of range definition to be [ or (")
+        return []
+
+    rangeDef.append(inputString[1:commaLoc])
+
+    if lastChar == ']':
+        rangeDef.append('<=')
+    elif lastChar == ')':
+        rangeDef.append('<')
+    else:
+        raise ValueError("Expected last character of range definition to be ] or )")
+        return []
+
+    rangeDef.append(inputString[commaLoc + 1:stringLength - 1])
+    return rangeDef
 
 # Checks the value of a variable on the PLC against a condition
 # Supported conditions: =, <, >, <=, >=
@@ -248,15 +296,18 @@ def setValueOfNode(client, taskName, varName, value):
 def checkValueOfNode(client, taskName, varName, checkValue, condition):
     # Get the value of the node on the server
     value = getValueOfNode(client,taskName,varName)
-    # Get the datatype of the node on the server
-    nodeName = BNR_TASKS_PATH + taskName + ":" + varName
-    node = client.get_node(nodeName)
-    variantType = node.get_data_type_as_variant_type()
+
     # Convert the checkValue to the correct datatype
-    checkValue = convertOpcUaType(checkValue,variantType)
+    # Only do this if Range is not the desired check
+    # This wouldn't be recognized as a datatype
+    if condition != 'Range':
+        nodeName = BNR_TASKS_PATH + taskName + ":" + varName
+        node = client.get_node(nodeName)
+        variantType = node.get_data_type_as_variant_type()
+        checkValue = convertOpcUaType(checkValue,variantType)
 
     # Perform the check
-    if condition == '=':
+    if condition == '=' or condition == '':
         if value == checkValue:
             return True
         else:
@@ -281,8 +332,25 @@ def checkValueOfNode(client, taskName, varName, checkValue, condition):
             return True
         else:
             return False
+    elif condition == 'Range':
+        try:
+            rangeDef = parseRangeParameters(checkValue)
+        except Exception as exc:
+            raise(exc)
+            return False
+
+        if rangeDef == []:
+            raise ValueError("Invalid range definition")
+            return False
+
+        firstValueCheck = checkValueOfNode(client, taskName, varName, rangeDef[1], rangeDef[0])
+        secondValueCheck = checkValueOfNode(client, taskName, varName, rangeDef[3], rangeDef[2])
+        if firstValueCheck and secondValueCheck:
+            return True
+        else:
+            return False
     else:
-        print("Invalid condition")
+        raise ValueError("Invalid condition")
         return False
 
 # Function which imports a CSV test config file
@@ -328,36 +396,33 @@ def processTestFileEntry(client, CurrentVar):
         logging.info('Getting %s',CurrentVar.varName)
         try:
             Value = getValueOfNode(client, CurrentVar.taskName, CurrentVar.varName)
-        except:
-            logging.warning('Get Value failed!')
+        except Exception as exc:
+            logging.warning('Get Value of %s failed! %s', currentVar.varName, exc)
             OutputEntry.status = 'Fail'
+            raise Exception
         else:
-            logging.info('The value of the chosen variable is: %s', str(Value))
+            logging.info('The value of %s is: %s', CurrentVar.varName, str(Value))
             OutputEntry.status = 'Success'
             OutputEntry.output = Value
     elif (CurrentVar.action == 'Set'):
         logging.info('Setting %s to %s', CurrentVar.varName, CurrentVar.input1)
         try:
             setValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1)
-        except ValueError as ve:
-            logging.warning('Variable was not set! %s', ve)
+        except Exception as exc:
+            logging.warning('%s was not set! %s', CurrentVar.varName, exc)
             OutputEntry.status = 'Fail'
-        except RuntimeError as re:
-            logging.warning('Variable was not set! %s', re)
-            OutputEntry.status = 'Fail'
-        except:
-            logging.warning('Variable was not set!')
-            OutputEntry.status = 'Fail'
+            raise Exception
         else:
-            logging.info('Variable set successfully')
+            logging.info('%s set successfully', CurrentVar.varName)
             OutputEntry.status = 'Success'
     elif (CurrentVar.action == 'Check'):
         logging.info('Checking %s', CurrentVar.varName)
         try:
             checkResult = checkValueOfNode(client, CurrentVar.taskName, CurrentVar.varName, CurrentVar.input1, CurrentVar.input2)
         except Exception as exc:
-            logging.warning('Check Value failed! %s', exc)
+            logging.warning('Check Value of %s failed! %s', CurrentVar.varName, exc)
             OutputEntry.status = 'Fail'
+            raise Exception
         else:
             OutputEntry.status = 'Success'
             logging.info('Check value completed successfully')
@@ -400,8 +465,7 @@ def menu(client):
         try:
             ListOfTaskNodes = getPLCTasks(client)
         except Exception as exc:
-            print('\n', exc)
-            print("Get tasks failed!")
+            print(exc)
         else:
             ListOfTaskNames = []
             for Task in ListOfTaskNodes:
@@ -413,8 +477,7 @@ def menu(client):
         try:
             ListOfPVNodes = getPLCTags(client)
         except Exception as exc:
-            print('\n', exc)
-            print("Get variables failed!")
+            print("Get variables failed!", exc)
         else:
             ListOfTagNames = []
             for PVNode in ListOfPVNodes:
@@ -427,8 +490,8 @@ def menu(client):
         varName = input("Enter the name of the variable as it exists on the PLC: ")
         try:
             Value = getValueOfNode(client, taskName, varName)
-        except:
-            print("Get Value failed!")
+        except Exception as exc:
+            print("Get Value failed!", exc)
         else:
             print("\nThe value of the chosen variable is: " + str(Value))
     elif optionChoice == "D" or optionChoice == "d": # Set a specific variable value
@@ -437,14 +500,8 @@ def menu(client):
         value = input("Enter the value to set: ")
         try:
             setValueOfNode(client, taskName, varName, value)
-        except ValueError as ve:
-            print(ve)
-            print("Variable was not set!")
-        except RuntimeError as re:
-            print(re)
-            print("Variable was not set!")
-        except:
-            print("Variable was not set!")
+        except Exception as exc:
+            print("Variable was not set!", exc)
         else:
             print("Variable set successfully. The value is now:", getValueOfNode(client, taskName, varName))
     elif optionChoice == "E" or optionChoice == "e": # Import a list of vars
@@ -473,10 +530,14 @@ def menu(client):
         for CurrentVar in ListOfInputs:
             try:
                 OutputEntry = processTestFileEntry(client, CurrentVar)
-            except Exception as exc:
-                logging.warning('Error processing line %i: %s', finishedVars + 1, exc)
-            finally:
+            except Exception:
+                logging.warning('Error processing line %i', finishedVars + 1)
+                OutputEntry = ResultDef(CurrentVar.action,CurrentVar.taskName,CurrentVar.varName)
+                OutputEntry.status = 'Fail'
                 ListOfOutputs.append(OutputEntry)
+            else:
+                ListOfOutputs.append(OutputEntry)
+            finally:
                 finishedVars += 1
                 print("Processed line", finishedVars, "of", len(ListOfInputs))
         # Export results
@@ -495,8 +556,7 @@ def menu(client):
         try:
             client.disconnect()
         except Exception as exc:
-            print('\n', exc)
-            print("Disconnection failed!")
+            print("Disconnection failed!", exc)
         else:
             print("\nDisconnected!")
         finally:
@@ -509,10 +569,11 @@ def menu(client):
 def main():
     # Initialize logging
     logging.basicConfig(filename="OpcUaUnitTesting_Log.log", level=logging.INFO, filemode="w")
+    logging.getLogger("opcua").setLevel(logging.WARNING)
 
     # Get connection parameters from the User
-    clientIp = "172.19.96.1" #= input("Enter PLC IP Address: ")
-    clientPort = "4840" #= input("Enter PLC OPC-UA port: ")
+    clientIp = input("Enter PLC IP Address: ")
+    clientPort = input("Enter PLC OPC-UA port: ")
     clientUserName = input("Enter Username for connection, or leave blank for Anonymous connection: ")
     clientPassWord = ""
     if clientUserName == "":
@@ -540,55 +601,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# To Do:
-# -Methods
-
-# Example Notes
-    # client = Client("opc.tcp://admin@localhost:4840") #connect using a user
-
-    #root = client.get_root_node()
-    #print("Objects node is: ", root)
-
-    # Node objects have methods to read and write node attributes as well as browse or populate address space
-    #print("Children of root are: ", root.get_children())
-
-    # get a specific node knowing its node id
-    #var = client.get_node(ua.NodeId(1002, 2))
-    #var = client.get_node("ns=3;i=2002")
-    #print(var)
-    #var.get_data_value() # get value of node as a DataValue object
-    #var.get_value() # get value of node as a python builtin
-    #var.set_value(ua.Variant([23], ua.VariantType.Int64)) #set node value using explicit data type
-    #var.set_value(3.9) # set node value using implicit data type
-
-    # Stacked myvar access
-    # print("myvar is: ", root.get_children()[0].get_children()[1].get_variables()[0].get_value())
-
-    # Possible variant types:
-    # :ivar Null:
-    # :ivar Boolean:
-    # :ivar SByte:
-    # :ivar Byte:
-    # :ivar Int16:
-    # :ivar UInt16:
-    # :ivar Int32:
-    # :ivar UInt32:
-    # :ivar Int64:
-    # :ivar UInt64:
-    # :ivar Float:
-    # :ivar Double:
-    # :ivar String:
-    # :ivar DateTime:
-    # :ivar Guid:
-    # :ivar ByteString:
-    # :ivar XmlElement:
-    # :ivar NodeId:
-    # :ivar ExpandedNodeId:
-    # :ivar StatusCode:
-    # :ivar QualifiedName:
-    # :ivar LocalizedText:
-    # :ivar ExtensionObject:
-    # :ivar DataValue:
-    # :ivar Variant:
-    # :ivar DiagnosticInfo:

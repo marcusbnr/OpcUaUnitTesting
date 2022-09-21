@@ -4,6 +4,7 @@
   <Objects>
     <Object Type="Package" Description="AreaContents">AreaContents</Object>
     <Object Type="Package">PageHome</Object>
+    <Object Type="Package">PageWaterHeater</Object>
     <Object Type="Package">PageAudit</Object>
     <Object Type="Package">PageAlarms</Object>
   </Objects>

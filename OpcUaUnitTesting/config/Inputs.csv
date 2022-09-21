@@ -1,9 +1,6 @@
 ﻿Action,TaskName,VarName,Input1,Input2
-Set,AsGlobalPV,gGlobalUInt,50,
-Set,AsGlobalPV,gGlobalString,Automated String,
-Set,AsGlobalPV,gTestStruct.TestBOOL,1,
+Set,WaterHeat,FillValveOpen,1,
 Wait,,,5,
-Check,AsGlobalPV,gGlobalUInt,50,=
-Check,AsGlobalPV,gGlobalString,Automated String,=
-Check,AsGlobalPV,gTestStruct.TestBOOL,1,=
-Get,AsGlobalPV,gTestStruct.TestUDINT,,
+Check,WaterHeat,WaterLevel,75,>
+Get,WaterHeat,WaterTemperature,,
+Check,WaterHeat,WaterTemperature,"[0,30(",Range

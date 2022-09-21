@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BindingsSet id="ContentWaterHeater_binding" xmlns="http://www.br-automation.com/iat2015/binding/engineering/v2" xmlns:bt="http://www.br-automation.com/iat2015/bindingListTypes/engineering/v2" xmlns:be="http://www.br-automation.com/iat2015/bindingListEmbedded/engineering/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Bindings>
+<Binding mode="oneWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:WaterLevel" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="LinearGaugeWaterLevel" attribute="value" />
+</Binding>
+<Binding mode="oneWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:WaterTemperature" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="NumericOutput1" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:HeaterOn" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="ToggleButtonHeater" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:FillValveOpen" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="ToggleButtonFillValve" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:DrainValveOpen" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="ToggleButtonDrainValve" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:DrainRate" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="NumericInputDrainRate" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:FillRate" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="NumericInputFillRate" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:HeatRate" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="NumericInputHeatRate" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::WaterHeat:CoolRate" attribute="value" />
+<Target xsi:type="brease" contentRefId="ContentWaterHeater" widgetRefId="NumericInputCoolRate" attribute="value" />
+</Binding>
+</Bindings>
+</BindingsSet>

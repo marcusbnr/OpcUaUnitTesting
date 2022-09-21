@@ -5,6 +5,7 @@
     <Page refId="PageHome" />
     <Page refId="PageAudit" />
     <Page refId="PageAlarms" />
+    <Page refId="PageWaterHeater" />
   </Pages>
   <Navigations>
     <Navigation refId="MainNavigation" />
@@ -14,12 +15,14 @@
     <BindingsSet refId="ContentHome_binding" />
     <BindingsSet refId="ContentAudit_binding" />
     <BindingsSet refId="ContentAlarms_binding" />
+    <BindingsSet refId="ContentWaterHeater_binding" />
   </BindingsSets>
   <EventBindingsSets />
   <Dialogs />
   <Contents>
     <Content refId="ContentAudit" />
     <Content refId="ContentAlarms" />
+    <Content refId="ContentWaterHeater" />
   </Contents>
   <SnippetsSets />
   <VariablesSets />
