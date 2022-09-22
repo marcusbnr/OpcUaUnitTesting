@@ -1,5 +1,5 @@
 # OpcUaUnitTesting
-A package that allows a user to connect to a B&R PLC via OpcUa and run unit tests
+A Python script that allows a user to connect to a B&R PLC via OpcUa and run unit tests
 
 ## How to Use
 After starting the OpcUaUnitTesting script, you will be prompted to input the IP address of the server PLC and the port on which the server is hosting OpcUa communication. Optionally, you can also enter a username. If one is entered, you will then be prompted for a password. This allows you to connect either anonymously or with login credentials, depending on what the server supports.
