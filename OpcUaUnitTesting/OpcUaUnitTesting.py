@@ -444,6 +444,38 @@ def processTestFileEntry(client, CurrentVar):
         logging.warning("Invalid action requested")
     return OutputEntry
 
+#
+def processTestFile(client, inputCsvFileName, outputCsvFileName):
+    # Import CSV file and create a list of variables to get sorted by time
+    ListOfInputs = importTestFile(inputCsvFileName)
+    # Set initial values
+    startTime = datetime.now()
+    ListOfOutputs = []
+    finishedVars = 0
+    print("\nProcessing list of", len(ListOfInputs), "variables starting at", startTime)
+    # Process list in order
+    for CurrentVar in ListOfInputs:
+        try:
+            OutputEntry = processTestFileEntry(client, CurrentVar)
+        except Exception:
+            logging.warning('Error processing line %i', finishedVars + 1)
+            OutputEntry = ResultDef(CurrentVar.action,CurrentVar.taskName,CurrentVar.varName)
+            OutputEntry.status = 'Fail'
+            ListOfOutputs.append(OutputEntry)
+        else:
+            ListOfOutputs.append(OutputEntry)
+        finally:
+            finishedVars += 1
+            print("Processed line", finishedVars, "of", len(ListOfInputs))
+    # Export results
+    try:
+        exportValuesToTestFile(ListOfOutputs, outputCsvFileName)
+    except Exception as exc:
+        logging.warning('Failed to write output file: %s', exc)
+    finally:
+        print("Finished processing",finishedVars,"variables at",datetime.now())
+    return
+
 # Function which shows the user a menu and processes responses
 # Requires: An OpcUa Client
 # Modifies: Only local variables
@@ -519,34 +551,7 @@ def menu(client):
             else:
                 print("Invalid input. Aborting")
                 return menu(client)
-        # Import CSV file and create a list of variables to get sorted by time
-        ListOfInputs = importTestFile(inputCsvFileName)
-        # Set initial values
-        startTime = datetime.now()
-        ListOfOutputs = []
-        finishedVars = 0
-        print("\nProcessing list of", len(ListOfInputs), "variables starting at", startTime)
-        # Process list in order
-        for CurrentVar in ListOfInputs:
-            try:
-                OutputEntry = processTestFileEntry(client, CurrentVar)
-            except Exception:
-                logging.warning('Error processing line %i', finishedVars + 1)
-                OutputEntry = ResultDef(CurrentVar.action,CurrentVar.taskName,CurrentVar.varName)
-                OutputEntry.status = 'Fail'
-                ListOfOutputs.append(OutputEntry)
-            else:
-                ListOfOutputs.append(OutputEntry)
-            finally:
-                finishedVars += 1
-                print("Processed line", finishedVars, "of", len(ListOfInputs))
-        # Export results
-        try:
-            exportValuesToTestFile(ListOfOutputs, outputCsvFileName)
-        except Exception as exc:
-            logging.warning('Failed to write output file: %s', exc)
-        finally:
-            print("Finished processing",finishedVars,"variables at",datetime.now())
+            processTestFile(client, inputCsvFileName, outputCsvFileName)
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message

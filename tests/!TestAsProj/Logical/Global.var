@@ -1,0 +1,6 @@
+VAR
+	gGlobalInt : INT := -100;
+	gGlobalUInt : UINT := 100;
+	gGlobalString : STRING[50] := 'Test String?!';
+	gTestStruct : GlobalTestStruct := (TestUDINT:=45678,TestBOOL:=TRUE,TestSTRING:='Test String 2',TestSubStruct:=(TestREAL:=123.4,TestLREAL:=432.1));
+END_VAR

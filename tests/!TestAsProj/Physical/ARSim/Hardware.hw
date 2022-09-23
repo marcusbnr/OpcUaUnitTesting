@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.12.2.93 FileVersion="4.9"?>
+<Hardware xmlns="http://br-automation.co.at/AS/Hardware">
+  <Module Name="PC" Type="PC_any" Version="1.1.1.0" OrderNumber="PC">
+    <Connector Name="IF3">
+      <Parameter ID="InternetAddress" Value="172.18.224.1" />
+    </Connector>
+    <Parameter ID="ConfigurationID" Value="TestAsProj_ARSim" />
+    <Parameter ID="Cyclic1Duration" Value="10000" />
+    <Parameter ID="Cyclic1Tolerance" Value="0" />
+    <Parameter ID="Cyclic2Duration" Value="20000" />
+    <Parameter ID="Cyclic2Tolerance" Value="20000" />
+    <Group ID="FileDevice1" />
+    <Parameter ID="FileDeviceName1" Value="USER" />
+    <Parameter ID="FileDevicePath1" Value="USER_PATH" />
+    <Group ID="FileDevice2" />
+    <Parameter ID="FileDeviceName2" Value="FD_Audit" />
+    <Parameter ID="FileDevicePath2" Value="C:\BrData\Audit\" />
+    <Parameter ID="ActivateOpcUa" Value="1" />
+    <Parameter ID="OpcUaActivateAuditEvents" Value="1" />
+    <Parameter ID="OpcUaInformationModels_PV_Version" Value="1" />
+  </Module>
+</Hardware>

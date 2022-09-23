@@ -9,6 +9,7 @@ Outfiles/
 
 # Python Package
 dist/
+**/__pycache__
 *.egg-info/
 
 # Automation Studio Project

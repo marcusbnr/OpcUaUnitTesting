@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<pdef:Page xmlns:pdef="http://www.br-automation.com/iat2015/pageDefinition/v2" id="PageAudit" layoutRefId="LayoutMain" description="Audit Page" displayName="Audit Page">
-  <Assignments>
-    <Assignment type="Content" baseContentRefId="ContentHeader" areaRefId="AreaHeader" />
-    <Assignment type="Content" baseContentRefId="ContentInfo" areaRefId="AreaInfo" />
-    <Assignment type="Content" baseContentRefId="ContentAudit" areaRefId="AreaContent" />
-    <Assignment type="Content" baseContentRefId="ContentNav" areaRefId="AreaNavigation" />
-  </Assignments>
-</pdef:Page>
