@@ -367,7 +367,8 @@ def importTestFile(filename):
         for row in csvReader:
             configDefList.append(ConfigDef(row["Action"],row["TaskName"],row["VarName"],row["Input1"],row["Input2"]))
             lineCount += 1
-        print(f'\nRead {lineCount} lines in from CSV file')
+        csvFile.close()
+        print(f'Read {lineCount} lines in from CSV file')
     return configDefList
 
 # Function which exports a CSV test results file
@@ -383,7 +384,7 @@ def exportValuesToTestFile(ListOfVars, filename):
         for var in ListOfVars:
             csvWriter.writerow({'Action':var.action,'TaskName':var.taskName,'VarName':var.varName,'Status':var.status,'Output':var.output})
             lineCount += 1
-        print(f'\nWrote {lineCount} lines to Output CSV file')
+        print(f'Wrote {lineCount} lines to Output CSV file')
     return
 
 # Function which processes an entry line in an import file
@@ -444,7 +445,10 @@ def processTestFileEntry(client, CurrentVar):
         logging.warning("Invalid action requested")
     return OutputEntry
 
-#
+# Import a CSV file of commands, process each line, and output results
+# Requires: an OpcUa Client, Input CSV filename, Output CSV filename
+# Modifies: Sets PLC variables as commanded by input file, Writes output to output file
+# Returns: Nothing
 def processTestFile(client, inputCsvFileName, outputCsvFileName):
     # Import CSV file and create a list of variables to get sorted by time
     ListOfInputs = importTestFile(inputCsvFileName)
@@ -452,7 +456,6 @@ def processTestFile(client, inputCsvFileName, outputCsvFileName):
     startTime = datetime.now()
     ListOfOutputs = []
     finishedVars = 0
-    print("\nProcessing list of", len(ListOfInputs), "variables starting at", startTime)
     # Process list in order
     for CurrentVar in ListOfInputs:
         try:
@@ -472,8 +475,6 @@ def processTestFile(client, inputCsvFileName, outputCsvFileName):
         exportValuesToTestFile(ListOfOutputs, outputCsvFileName)
     except Exception as exc:
         logging.warning('Failed to write output file: %s', exc)
-    finally:
-        print("Finished processing",finishedVars,"variables at",datetime.now())
     return
 
 # Function which shows the user a menu and processes responses
@@ -538,8 +539,12 @@ def menu(client):
             print("Variable set successfully. The value is now:", getValueOfNode(client, taskName, varName))
     elif optionChoice == "E" or optionChoice == "e": # Import a list of vars
         # Get filenames from user
-        inputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/OpcUaUnitTesting/config/Inputs.csv" #input("Enter the path to a valid input file (CSV format): ")
-        outputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/outfiles/Output.csv" #input("Enter the path to where the output file should be saved: ")
+        inputCsvFileName = input("Enter the path to a valid input file (CSV format): ")
+        outputCsvFileName = input("Enter the path to where the output file should be saved: ")
+        # Check if input file exists
+        if not exists(inputCsvFileName):
+            print("Input file does not exist. Aborting")
+            return menu(client)
         # Check for existing output file
         if exists(outputCsvFileName):
             ShouldIDeleteFile = input(("Output file already exists. The existing file will be overwritten. Continue? Y/N "))

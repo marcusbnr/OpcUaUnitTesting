@@ -4,7 +4,6 @@ OpcUaUnitTesting test script
 Marcus Mangel <marcus.mangel@br-automation.com>
 
 """
-
 from OpcUaUnitTesting import OpcUaUnitTesting
 import sys
 import os
@@ -18,8 +17,8 @@ import csv
 
 def main():
     # Initialize logging
-    logging.basicConfig(filename="OpcUaUnitTesting_Log.log", level=logging.INFO, filemode="w")
-    logging.getLogger("opcua").setLevel(logging.WARNING)
+    logging.basicConfig(filename="OpcUaUnitTesting_TestScript_Log.log", level=logging.INFO, filemode="w")
+    logging.getLogger("opcua").setLevel(logging.DEBUG)
 
     # Get connection parameters from the User
     clientIp = '172.23.112.1' #input("Enter PLC IP Address: ")
@@ -48,19 +47,22 @@ def main():
 
     # Find test directories
     TestFolders = []
-    with os.scandir('/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/tests') as TestDir:
+    with os.scandir('tests') as TestDir:
         for entry in TestDir:
             if not entry.name.startswith('!') and entry.is_dir():
                 TestFolders.append(entry.name)
 
     # Run the test for each test directory
+    TotalTests = 0;
+    PassedTests = 0;
+    FailedTests = 0;
     for TestDir in TestFolders:
         print("\nTesting", TestDir)
-        inputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/tests/" + TestDir + "/Inputs.csv"
-        outputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/tests/" + TestDir + "/Output.csv"
-        correctOutputCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/tests/" + TestDir + "/CorrectOutput.csv"
-        testResultCsvFileName = "/mnt/c/projects/Non AS Projects/Python/OpcUaUnitTesting/tests/" + TestDir + "/TestOutput.csv"
-        processTestFile(client, inputCsvFileName, outputCsvFileName)
+        inputCsvFileName = "tests/" + TestDir + "/Inputs.csv"
+        outputCsvFileName = "tests/" + TestDir + "/Output.csv"
+        correctOutputCsvFileName = "tests/" + TestDir + "/CorrectOutput.csv"
+        testResultCsvFileName = "tests/" + TestDir + "/TestOutput.csv"
+        OpcUaUnitTesting.processTestFile(client, inputCsvFileName, outputCsvFileName)
 
         # Compre files
         with open(outputCsvFileName, 'r') as ScriptOutput, open(correctOutputCsvFileName, 'r') as CorrectOutput:
@@ -75,19 +77,24 @@ def main():
                     outFile.write(line)
             outFile.close()
 
+        TotalTests = TotalTests + 1
         if os.stat(testResultCsvFileName).st_size != 0:
+            FailedTests = FailedTests + 1
             print("\nTest Failed!")
         else:
+            PassedTests = PassedTests + 1
             print("\nTest Passed!")
 
     try:
         client.disconnect()
     except Exception as exc:
-        print("Disconnection failed!", exc)
+        print("\nDisconnection failed!", exc)
     else:
-        print("Disconnected!")
+        print("\nDisconnected!")
     finally:
         print("Testing Complete!")
+        print("Passed", PassedTests, "test(s) out of", TotalTests, "total")
+        print("Failed", FailedTests, "test(s) out of", TotalTests, "total")
 
 if __name__ == '__main__':
     main()
