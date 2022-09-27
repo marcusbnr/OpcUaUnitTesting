@@ -54,6 +54,13 @@ The Python OpcUa client will disconnect from the PLC server.
 ## Logging
 In most cases, error information will be output to the console. However, the automatic (Import a list of variables) testing will instead output information and errors to a log file named OpcUaUnitTesting_Log.log
 
+## Automated Testing
+In order to test the "Import a list of variables" functionality, there is a test script which can run the main script through custom test cases. All tests are located in the "tests" folder of the repository and the testing script (TestImportFile.py) is located one level up from that. A test case is a folder in the tests directory which contains an input file (Input.csv) and an output file to check against (CorrectOutput.csv). The test script will call the processTestFile function in the main script for each test case and create an Output.csv file in the same folder. It will check Output.csv against CorrectOutput.csv and put any differences in a file called TestOutput.csv. You will get information on the console about which tests have passed and which have failed.
+
+Note that any folders beginning with the ! character will be ignored by the test script. 
+
+There is a batch file in the "tests" folder which will delete all generated output files (Output.csv and TestOutput.csv). This file will permanently delete any files in its folder and any subfolders that match these names exactly.
+
 ## Package Dependencies
 - csv
 - datetime
