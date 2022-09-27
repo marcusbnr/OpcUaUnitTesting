@@ -1,6 +1,12 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - Global variables
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 VAR
-	gGlobalInt : INT := -100;
-	gGlobalUInt : UINT := 100;
-	gGlobalString : STRING[50] := 'Test String?!';
-	gTestStruct : GlobalTestStruct := (TestUDINT:=45678,TestBOOL:=TRUE,TestSTRING:='Test String 2',TestSubStruct:=(TestREAL:=123.4,TestLREAL:=432.1));
+	gGlobalInt : INT := -100; (*Testing with Integer*)
+	gGlobalUInt : UINT := 100; (*Testing with Unsigned Integer*)
+	gGlobalString : STRING[50] := 'Test String?!'; (*Testing with String*)
+	gTestStruct : GlobalTestStruct := (TestUDINT:=45678,TestBOOL:=TRUE,TestSTRING:='Test String 2',TestSubStruct:=(TestREAL:=123.4,TestLREAL:=432.1)); (*Testing using a basic structure*)
 END_VAR

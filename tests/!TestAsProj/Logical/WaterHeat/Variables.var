@@ -1,3 +1,9 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - WaterHeat task variables
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 VAR
 	WaterLevel : REAL; (*Level of the water in the heater [%]*)
 	WaterTemperature : REAL; (*Temperature of the water in the heater [deg C]*)

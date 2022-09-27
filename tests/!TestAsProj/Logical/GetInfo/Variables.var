@@ -1,13 +1,19 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - GetInfo task variables
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 VAR
-	VisInfo : VisInfo_type;
-	InfoRefreshState : InfoRefreshState_enum;
-	CmdRefreshInfo : BOOL;
-	CmdErrorReset : BOOL;
-	Error : BOOL;
-	DtStruct : DTStructure;
+	VisInfo : VisInfo_type; (*Contains all information shown on the HMI*)
+	InfoRefreshState : InfoRefreshState_enum; (*State machine state*)
+	CmdRefreshInfo : BOOL; (*Command to start refreshing information*)
+	CmdErrorReset : BOOL; (*Reset errors*)
+	Error : BOOL; (*Error status*)
+	DtStruct : DTStructure; (*Current Date/Time found during refresh*)
 END_VAR
 (*Function Blocks*)
 VAR
-	fb_CfgGetIpAddr : CfgGetIPAddr;
-	fb_DTStructureGetTime : DTStructureGetTime;
+	fb_CfgGetIpAddr : CfgGetIPAddr; (*Get PLC's IP Address*)
+	fb_DTStructureGetTime : DTStructureGetTime; (*Get current Date/Time*)
 END_VAR

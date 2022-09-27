@@ -1,9 +1,15 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - BasicTest task variables
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 VAR
-	TestBOOL : BOOL := TRUE;
-	TestDINT : DINT := 65534;
-	TestDT : DATE_AND_TIME;
-	TestTIME : TIME := T#1d;
-	AdditionIn1 : REAL;
-	AdditionIn2 : REAL;
-	AdditionOut : REAL;
+	TestBOOL : BOOL := TRUE; (*Boolean variable to test with*)
+	TestDINT : DINT := 65534; (*Double Integer variable to test with*)
+	TestDT : DATE_AND_TIME; (*DateTime variable to test with*)
+	TestTIME : TIME := T#1d; (*Time variable to test with*)
+	AdditionIn1 : REAL; (*Calculator test: Input 1*)
+	AdditionIn2 : REAL; (*Calculator test: Input 2*)
+	AdditionOut : REAL; (*Calculator test: Output*)
 END_VAR

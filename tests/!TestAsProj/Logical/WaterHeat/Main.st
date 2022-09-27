@@ -1,3 +1,10 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - WaterHeat task.
+This task mimics a water heater to provide more advanced testing.
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 
 PROGRAM _INIT
     // Initial values
@@ -12,6 +19,25 @@ PROGRAM _INIT
 END_PROGRAM
 
 PROGRAM _CYCLIC
+    (*
+    This task simulates a water heater which can fill with water and drain water.
+    The water inside can also be heated, or cooled to the air if the heater is off.
+    
+    The water level will never fall below the MIN_LEVEL constant, nor will it fill above
+    the MAX_LEVEL constant. Likewise, it will never heat above the MAX_TEMPERATURE constant and
+    it won't cool below the BASE_TEMPERATURE constant.
+    
+    Turning the heater on will cause the water to heat at HeatRate. Turning off the heater 
+    will cause it to cool at CoolRate.
+    
+    Opening the fill valve will cause the water to fill at FillRate. Opening the drain
+    valve will cause the water to drain at DrainRate. If the fill valve and the drain valve
+    are both closed, the water level will not change.
+    
+    Rates of change are assumed to be "per second". Therefore, the CYCLES_PER_SECOND constant
+    must be consistent with this task's task class cycle time.
+    *)
+    
 	// Heating
     IF HeaterOn THEN
         WaterTemperature := WaterTemperature + (HeatRate/CYCLES_PER_SECOND);
@@ -43,4 +69,3 @@ PROGRAM _CYCLIC
     END_IF;
 	 
 END_PROGRAM
-

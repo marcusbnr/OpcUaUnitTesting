@@ -1,18 +1,26 @@
+(*
+OpcUaUnitTesting Example Automation Studio project - GetInfo task.
+This task populates the ContentInfo content of the mappView HMI
+
+Author: Marcus Mangel (marcus.mangel@br-automation.com)
+Date: 27 September 2022
+*)
 
 PROGRAM _INIT
-    CmdRefreshInfo := TRUE;
+    CmdRefreshInfo := TRUE; // Refresh all information on startup
 	 
 END_PROGRAM
 
 PROGRAM _CYCLIC
+    // Refresh Info state machine
     CASE InfoRefreshState OF
-        INFO_REFRESH_STATE_WAIT:
+        INFO_REFRESH_STATE_WAIT: // Wait for a command
             IF CmdRefreshInfo THEN
                 CmdRefreshInfo := FALSE;
                 InfoRefreshState := INFO_REFRESH_STATE_GET_IP;
             END_IF;
             
-        INFO_REFRESH_STATE_GET_IP:
+        INFO_REFRESH_STATE_GET_IP: // Get the PLC's IP Address
             fb_CfgGetIpAddr.enable := TRUE;
             fb_CfgGetIpAddr.pDevice := ADR('IF3');
             fb_CfgGetIpAddr.pIPAddr := ADR(VisInfo.IpAddr);
@@ -28,7 +36,7 @@ PROGRAM _CYCLIC
                 END_IF;
             END_IF;
             
-        INFO_REFRESH_STATE_GET_DAY:
+        INFO_REFRESH_STATE_GET_DAY: // Figure out if it's Friday
             brsmemset(ADR(VisInfo.IsItFriday), 0, SIZEOF(VisInfo.IsItFriday));
             brsstrcpy(ADR(VisInfo.IsItFriday), ADR('No :('));
             
@@ -50,7 +58,7 @@ PROGRAM _CYCLIC
             END_IF;
                                                       
             
-        INFO_REFRESH_STATE_ERROR:
+        INFO_REFRESH_STATE_ERROR: // Error getting info
             IF CmdErrorReset THEN
                 CmdErrorReset := FALSE;
                 Error := FALSE;
