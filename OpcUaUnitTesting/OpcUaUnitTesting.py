@@ -38,7 +38,7 @@ class ResultDef:
         self.taskName = taskName
         self.varName = varName
         self.status = "Initialized"
-        self.output = " "
+        self.output = ''
 
     def __repr__(self):
         return repr((self.action, self.taskName, self.varName, self.status, self.output))
@@ -289,10 +289,10 @@ def parseRangeParameters(inputString):
 
 # Checks the value of a variable on the PLC against a condition
 # Supported conditions: =, <, >, <=, >=
-# Requires An OpcUa Client, the name of a Task and the name of a Variable in that task,
+# Requires: An OpcUa Client, the name of a Task and the name of a Variable in that task,
 # a value to check against, and a condition with which to do the check
 # Modifies: Only local variables
-# Returns the result of the check as a boolean
+# Returns: the result of the check as a boolean
 def checkValueOfNode(client, taskName, varName, checkValue, condition):
     # Get the value of the node on the server
     value = getValueOfNode(client,taskName,varName)
@@ -365,8 +365,15 @@ def importTestFile(filename):
         csvReader = csv.DictReader(csvFile)
         lineCount = 0
         for row in csvReader:
-            configDefList.append(ConfigDef(row["Action"],row["TaskName"],row["VarName"],row["Input1"],row["Input2"]))
-            lineCount += 1
+            try:
+                configDefList.append(ConfigDef(row["Action"],row["TaskName"],row["VarName"],row["Input1"],row["Input2"]))
+            except KeyError as ke:
+                print("Could not import test file. Incorrect keys:", ke)
+                return []
+            except Exception as exc:
+                print("Could not import line", lineCount + 1, "of test file.", exc)
+            finally:
+                lineCount += 1
         csvFile.close()
         print(f'Read {lineCount} lines in from CSV file')
     return configDefList
@@ -384,6 +391,7 @@ def exportValuesToTestFile(ListOfVars, filename):
         for var in ListOfVars:
             csvWriter.writerow({'Action':var.action,'TaskName':var.taskName,'VarName':var.varName,'Status':var.status,'Output':var.output})
             lineCount += 1
+        csvFile.close()
         print(f'Wrote {lineCount} lines to Output CSV file')
     return
 

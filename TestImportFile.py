@@ -21,7 +21,7 @@ def main():
     logging.getLogger("opcua").setLevel(logging.DEBUG)
 
     # Get connection parameters from the User
-    clientIp = '172.23.112.1' #input("Enter PLC IP Address: ")
+    clientIp = '172.18.160.1' #input("Enter PLC IP Address: ")
     clientPort = '4840' #input("Enter PLC OPC-UA port: ")
     clientUserName = "" #input("Enter Username for connection, or leave blank for Anonymous connection: ")
     clientPassWord = ""

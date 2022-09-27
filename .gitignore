@@ -2,7 +2,12 @@
 venv/
 
 # Outfiles
-Outfiles/
+outfiles/
+Output.csv
+TestOutput.csv
+
+# Local config folder
+config/
 
 # Log file s
 *.log

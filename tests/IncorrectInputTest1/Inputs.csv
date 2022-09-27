@@ -1,0 +1,4 @@
+﻿Action,Task Name,Var Name,Input1,Input2
+Set,AsGlobalPV,gGlobalInt,1,
+Wait,,,5,
+Check,AsGlobalPV,gGlobalInt,100,<
