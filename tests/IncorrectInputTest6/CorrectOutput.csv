@@ -1,0 +1,3 @@
+﻿Action,TaskName,VarName,Status,Output
+Set,AsGlobalPV,gGlobalInt,Success,
+Check,AsGlobalPV,gGlobalInt,Fail,

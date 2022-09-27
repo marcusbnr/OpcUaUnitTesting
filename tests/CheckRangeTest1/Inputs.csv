@@ -1,0 +1,10 @@
+﻿Action,TaskName,VarName,Input1,Input2
+Set,AsGlobalPV,gGlobalInt,50,
+Check,AsGlobalPV,gGlobalInt,"[0,100]",Range
+Check,AsGlobalPV,gGlobalInt,"[0,100)",Range
+Check,AsGlobalPV,gGlobalInt,"(0,100]",Range
+Check,AsGlobalPV,gGlobalInt,"(0,100)",Range
+Check,AsGlobalPV,gGlobalInt,"(49,50]",Range
+Check,AsGlobalPV,gGlobalInt,"(49,50)",Range
+Check,AsGlobalPV,gGlobalInt,"[49.9,50.1]",Range
+Check,AsGlobalPV,gGlobalInt,"(49.9,50.1)",Range

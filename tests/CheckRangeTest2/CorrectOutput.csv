@@ -1,0 +1,8 @@
+﻿Action,TaskName,VarName,Status,Output
+Set,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,Success,Valid

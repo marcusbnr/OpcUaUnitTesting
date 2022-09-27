@@ -1,0 +1,3 @@
+﻿Action,TaskName,VarName,Input1,Input2
+Set,AsGlobalPV,gGlobalInt,15,
+Check,AsGlobalPV,gGlobalInt,[3],Range

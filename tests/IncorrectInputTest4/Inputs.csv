@@ -1,0 +1,2 @@
+﻿Action,TaskName,VarName,Input1,Input2
+Check,AsGlobalPV,gGlobalInt,"[0,20(",Range

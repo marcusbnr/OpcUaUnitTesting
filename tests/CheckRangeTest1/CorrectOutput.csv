@@ -1,0 +1,10 @@
+﻿Action,TaskName,VarName,Status,Output
+Set,AsGlobalPV,gGlobalInt,Success,
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Invalid
+Check,AsGlobalPV,gGlobalInt,Success,Valid
+Check,AsGlobalPV,gGlobalInt,Success,Valid

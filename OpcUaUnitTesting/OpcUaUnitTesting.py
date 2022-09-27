@@ -100,7 +100,7 @@ def getPLCTags(client):
 # Function which converts user input (string) to a valid datatype variant
 # Requires: The input datatype (inputStr) and the Variant Type required (variantType)
 # Modifies: Only local variables
-# Returns The converted value
+# Returns: The converted value
 def convertOpcUaType(inputStr, variantType):
     value = "Not converted yet"
     if variantType == ua.VariantType.String:
@@ -193,9 +193,9 @@ def convertOpcUaType(inputStr, variantType):
     return value
 
 # Gets the value of a variable on the PLC
-# Requires An OpcUa Client, the name of a Task and the name of a Variable in that task
+# Requires: An OpcUa Client, the name of a Task and the name of a Variable in that task
 # Modifies: Only local variables
-# Returns the value using OpcUa Client get_value() function
+# Returns: the value using OpcUa Client get_value() function
 def getValueOfNode(client, taskName, varName):
     # Find the requested node on the server
     nodeName = BNR_TASKS_PATH + taskName + ":" + varName
@@ -305,6 +305,11 @@ def checkValueOfNode(client, taskName, varName, checkValue, condition):
         node = client.get_node(nodeName)
         variantType = node.get_data_type_as_variant_type()
         checkValue = convertOpcUaType(checkValue,variantType)
+        # Do not attempt a comparison if the PLC variable is a String
+        # This comparison wouldn't make sense
+        if variantType == ua.VariantType.String:
+            raise ValueError("Cannot check the value of a String")
+            return False
 
     # Perform the check
     if condition == '=' or condition == '':

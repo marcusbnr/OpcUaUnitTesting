@@ -1,0 +1,8 @@
+﻿Action,TaskName,VarName,Input1,Input2
+Set,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,5123.4859,
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"[0,100]",Range
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"[5123,5124]",Range
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"[5123.0,5124.0]",Range
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"(5123,5124)",Range
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"[5123.0,5124.0]",Range
+Check,AsGlobalPV,gTestStruct.TestSubStruct.TestLREAL,"[5123.4858,512.48591]",Range
