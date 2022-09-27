@@ -29,10 +29,10 @@ Choosing this option will prompt you to enter the name of a task and a variable 
 
 ### Import a list of variables
 Choosing this option will allow you to automatically complete a list of actions related to PLC variables. This option requires you to create a CSV file with the following columns: Action, TaskName, VarName, Input1, Input2. Each line will be a seperate action that the script will process in order. When all lines have processed, an output CSV file will be created which will show the result (Success/Fail) of each action as well as provide you with any requested information. Each action can be thought of as a function which takes up to two inputs. For each row Action, TaskName, and VarName must always be filled out with vaild information. The available functions are:
-- Get: Get the value of a variable. Inputs are ignored.
-- Set: Set the value of a variable. Input1 is the value to set, Input2 is ignored.
-- Wait: Wait before executing the next action. Input1 is the number of seconds to wait, Input2 is ignored.
-- Check: Check the value of a variable against a condition. Input1 is the value to check against, Input2 is the condition.
+- Get: Get the value of a variable. Inputs are ignored. Outputs the value.
+- Set: Set the value of a variable. Input1 is the value to set, Input2 is ignored. This action has no Output.
+- Wait: Wait before executing the next action. Input1 is the number of seconds to wait, Input2 is ignored. This action has no Output.
+- Check: Check the value of a variable against a condition. Input1 is the value to check against, Input2 is the condition. Outputs the result of the check (Valid/Invalid).
 
 **Valid Check Conditions**
 
@@ -48,11 +48,15 @@ If 'Range' is chosen, Input1 must be formatted to show a range. This takes the f
 - [0,30] checks that 0 <= value <= 30
 - [1.3, 10.4) checks that 1.3 <= value < 10.4
 
+**Output File**
+
+An output file showing the results of all actions will be generated in the location you provide. This file has five columns: Action, TaskName, VarName, Status, and Output. The Action, TaskName, and VarName columns will exactly match the input file. The Status will show if the action was succesful ("Success") or unsuccessful ("Fail"). If the action failed, an error description can be found in the Log (see the [Logging](#logging) section). If the action is successful, the returned output of the action (if one is supplied) will be written in the Output column.
+
 ### Disconnect
 The Python OpcUa client will disconnect from the PLC server.
 
 ## Logging
-In most cases, error information will be output to the console. However, the automatic (Import a list of variables) testing will instead output information and errors to a log file named OpcUaUnitTesting_Log.log
+In most cases, error information will be output to the console. However, the automatic (Import a list of variables) testing will instead output information and errors to a log file named OpcUaUnitTesting_Log.log which will be created in the same directory as the script.
 
 ## Automated Testing
 In order to test the "Import a list of variables" functionality, there is a test script which can run the main script through custom test cases. All tests are located in the "tests" folder of the repository and the testing script (TestImportFile.py) is located one level up from that. A test case is a folder in the tests directory which contains an input file (Input.csv) and an output file to check against (CorrectOutput.csv). The test script will call the processTestFile function in the main script for each test case and create an Output.csv file in the same folder. It will check Output.csv against CorrectOutput.csv and put any differences in a file called TestOutput.csv. You will get information on the console about which tests have passed and which have failed.
