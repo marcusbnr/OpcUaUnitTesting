@@ -49,6 +49,7 @@ If 'Range' is chosen, Input1 must be formatted to show a range. This takes the f
 - [1.3, 10.4) checks that 1.3 <= value < 10.4
 
 **Output File**
+
 An output file showing the results of all actions will be generated in the location you provide. This file has five columns: Action, TaskName, VarName, Status, and Output. The Action, TaskName, and VarName columns will exactly match the input file. The Status will show if the action was succesful ("Success") or unsuccessful ("Fail"). If the action failed, an error description can be found in the Log (see the [Logging](#logging) section). If the action is successful, returned output of the action (if one is supplied) will be shown in the Output column.
 
 ### Disconnect
