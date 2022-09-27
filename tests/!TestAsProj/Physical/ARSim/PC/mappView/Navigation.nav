@@ -4,26 +4,10 @@
         <NavigationPath refId="PageHome">
             <Destination refId="PageHome" index="0" />
             <Destination refId="PageWaterHeater" index="1" />
-            <Destination refId="PageAudit" index="2" />
-            <Destination refId="PageAlarms" index="3" />
         </NavigationPath>
         <NavigationPath refId="PageWaterHeater">
             <Destination refId="PageHome" index="0" />
             <Destination refId="PageWaterHeater" index="1" />
-            <Destination refId="PageAudit" index="2" />
-            <Destination refId="PageAlarms" index="3" />
-        </NavigationPath>
-        <NavigationPath refId="PageAudit">
-            <Destination refId="PageHome" index="0" />
-            <Destination refId="PageWaterHeater" index="1" />
-            <Destination refId="PageAudit" index="2" />
-            <Destination refId="PageAlarms" index="3" />
-        </NavigationPath>
-        <NavigationPath refId="PageAlarms">
-            <Destination refId="PageHome" index="0" />
-            <Destination refId="PageWaterHeater" index="1" />
-            <Destination refId="PageAudit" index="2" />
-            <Destination refId="PageAlarms" index="3" />
         </NavigationPath>
     </NavigationPaths>
 </ndef:Navigation>

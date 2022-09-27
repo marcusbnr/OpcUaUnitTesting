@@ -4,8 +4,8 @@ PROGRAM _INIT
     WaterTemperature := BASE_TEMPERATURE;
     WaterLevel := 0.0;
     
-    HeatRate := 0.3;
-    CoolRate := 0.1;
+    HeatRate := 1.0;
+    CoolRate := 0.5;
     FillRate := 1.0;
     DrainRate := 1.0;
 	 

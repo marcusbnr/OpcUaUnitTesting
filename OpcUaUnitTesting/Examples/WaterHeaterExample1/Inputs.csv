@@ -1,0 +1,16 @@
+﻿Action,TaskName,VarName,Input1,Input2
+Get,WaterHeat,WaterLevel,,
+Get,WaterHeat,WaterTemperature,,
+Set,WaterHeat,HeatRate,2,
+Set,WaterHeat,CoolRate,1,
+Set,WaterHeat,FillRate,2,
+Set,WaterHeat,DrainRate,2,
+Set,WaterHeat,HeaterOn,1,
+Set,WaterHeat,FillValveOpen,1,
+Wait,,,12,
+Check,WaterHeat,WaterLevel,25,>
+Check,WaterHeat,WaterTemperature,40,>
+Get,WaterHeat,WaterLevel,,
+Get,WaterHeat,WaterTemperature,,
+Set,WaterHeat,HeaterOn,0,
+Set,WaterHeat,FillValveOpen,0,

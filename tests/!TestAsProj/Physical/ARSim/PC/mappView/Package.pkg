@@ -8,8 +8,6 @@
     <Object Type="File">Navigation.nav</Object>
     <Object Type="File">ContentInfo.binding</Object>
     <Object Type="File">ContentHome.binding</Object>
-    <Object Type="File">ContentAudit.binding</Object>
-    <Object Type="File">ContentAlarms.binding</Object>
     <Object Type="File">ContentWaterHeater.binding</Object>
   </Objects>
 </Package>

@@ -554,9 +554,13 @@ def menu(client):
         # Get filenames from user
         inputCsvFileName = input("Enter the path to a valid input file (CSV format): ")
         outputCsvFileName = input("Enter the path to where the output file should be saved: ")
-        # Check if input file exists
+        outputCsvFileName = os.path.join(outputCsvFileName,"Output.csv")
+        # Check if input file exists and is a valid input file
         if not exists(inputCsvFileName):
             print("Input file does not exist. Aborting")
+            return menu(client)
+        elif not inputCsvFileName.endswith('.csv'):
+            print("Input file must be a CSV file. Aborting")
             return menu(client)
         # Check for existing output file
         if exists(outputCsvFileName):
@@ -569,7 +573,7 @@ def menu(client):
             else:
                 print("Invalid input. Aborting")
                 return menu(client)
-            processTestFile(client, inputCsvFileName, outputCsvFileName)
+        processTestFile(client, inputCsvFileName, outputCsvFileName)
     elif optionChoice == "Z" or optionChoice == "z": # Disconnect
         endMenu = True
     else: # Show error message

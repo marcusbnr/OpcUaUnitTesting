@@ -11,7 +11,7 @@ VAR
 END_VAR
 (*Constants*)
 VAR CONSTANT
-	CYCLES_PER_SECOND : REAL := 5.0; (*PLC cycles per second*)
+	CYCLES_PER_SECOND : REAL := 1000.0; (*PLC cycles per second for this task's task class*)
 	BASE_TEMPERATURE : REAL := 20.0; (*Lowest possible water temperature [deg C]*)
 	MAX_TEMPERATURE : REAL := 100.0; (*Highest possible water temperature [deg C]*)
 	MIN_LEVEL : REAL := 5.0; (*Minimum water level [%]*)

@@ -1,4 +1,0 @@
-﻿Action,TaskName,VarName,Status,Output
-Set,AsGlobalPV,gGlobalInt,Success,
-Wait,,,Success,
-Check,AsGlobalPV,gGlobalInt,Success,Valid

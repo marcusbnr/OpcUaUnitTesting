@@ -10,15 +10,10 @@
   <DefaultView>
     <Module Name="&lt;Default&gt;">
       <GlobalVariables Name="Global Variables">
-        <Variable AuditEvents="True" Name="gGlobalInt">
-          <NodeDescription>
-            <DisplayName>Global Integer</DisplayName>
-            <Description>Test Global Integer</Description>
-          </NodeDescription>
-        </Variable>
-        <Variable AuditEvents="True" Name="gGlobalString" />
-        <Variable AuditEvents="True" Name="gGlobalUInt" />
-        <Variable AuditEvents="True" Name="gTestStruct" RecursiveEnable="2" />
+        <Variable Name="gGlobalInt" />
+        <Variable Name="gGlobalString" />
+        <Variable Name="gGlobalUInt" />
+        <Variable Name="gTestStruct" RecursiveEnable="2" />
       </GlobalVariables>
       <Task Name="GetInfo">
         <Variable Name="CmdErrorReset" />
@@ -27,13 +22,13 @@
         <Variable Name="VisInfo" RecursiveEnable="2" />
       </Task>
       <Task Name="BasicTest">
-        <Variable AuditEvents="True" Name="AdditionIn1" />
-        <Variable AuditEvents="True" Name="AdditionIn2" />
-        <Variable AuditEvents="True" Name="AdditionOut" />
-        <Variable AuditEvents="True" Name="TestBOOL" />
-        <Variable AuditEvents="True" Name="TestDINT" />
-        <Variable AuditEvents="True" Name="TestDT" />
-        <Variable AuditEvents="True" Name="TestTIME" />
+        <Variable Name="AdditionIn1" />
+        <Variable Name="AdditionIn2" />
+        <Variable Name="AdditionOut" />
+        <Variable Name="TestBOOL" />
+        <Variable Name="TestDINT" />
+        <Variable Name="TestDT" />
+        <Variable Name="TestTIME" />
       </Task>
       <Task Name="WaterHeat">
         <Variable Name="DrainRate" />
