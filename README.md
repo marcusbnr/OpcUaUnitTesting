@@ -1,5 +1,5 @@
 # OpcUaUnitTesting
-A Python script that allows a user to connect to a B&R PLC via OpcUa and run unit tests
+A Python script that allows a user to connect to a B&R PLC via OpcUa and run unit tests by reading and writing variable values.
 
 ## Disclaimer
 Changing variable values on the controller for a running machine may lead to unintended consequences. By using this tool, you assume all risks and associated liability. If you use this script on a running machine instead of a simulation, it is critical that you understand exactly what physical components of the machine will be affected. Additionally, it is recommended that you carefully decide which of the PLC's OpcUa nodes should be exposed to the machine network and impliment appropriate security measures.
