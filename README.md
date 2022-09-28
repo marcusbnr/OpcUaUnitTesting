@@ -71,3 +71,8 @@ There is a batch file in the "tests" folder which will delete all generated outp
 - opcua
 - os
 - sys
+
+## Automation Studio Project Dependencies
+- Automation Studio version >= 4.12.2.93
+- Automation Runtime version B4.93 for ARSim
+- mappView version 5.19.0
